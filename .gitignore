@@ -1,0 +1,16 @@
+/.bundle/
+/tmp/
+/pkg/
+/coverage/
+/doc/
+/vendor/bundle/
+Gemfile.lock
+*.gem
+.DS_Store
+.env
+.env.*
+*.token
+.hf_token
+hf_token*
+/test/fixtures/generated/
+

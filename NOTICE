@@ -1,0 +1,7 @@
+ruby-laya
+Copyright 2026 Valentino Stoll
+
+This product is a Ruby port of Laya (https://github.com/NandhaKishorM/laya),
+Copyright Convai Innovations, licensed under the Apache License, Version 2.0.
+The model checkpoints (convaiinnovations/laya and siblings) are published
+separately by Convai Innovations under the same license.

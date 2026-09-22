@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pure:
+    name: pure-Ruby tests (ruby ${{ matrix.ruby }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      # Routing, language detection, email cleaning, presets, the shortlist and sequence
+      # construction need no LibTorch: install only what those files load.
+      - run: gem install minitest rake
+      - run: |
+          for f in test/lang_test.rb test/router_test.rb test/email_test.rb test/presets_test.rb \
+                   test/common_test.rb test/py_json_test.rb test/shortlist_test.rb test/hub_test.rb; do
+            ruby -Ilib -Itest "$f" || exit 1
+          done
+
+  model:
+    name: model tests (torch-rb, ruby ${{ matrix.ruby }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.3"]
+    env:
+      LIBTORCH_VERSION: "2.14.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: Cache LibTorch
+        id: libtorch
+        uses: actions/cache@v4
+        with:
+          path: libtorch
+          key: libtorch-cpu-${{ env.LIBTORCH_VERSION }}
+      - name: Download LibTorch (CPU)
+        if: steps.libtorch.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-${LIBTORCH_VERSION}%2Bcpu.zip" -o libtorch.zip
+          unzip -q libtorch.zip
+      - name: Install gems
+        run: |
+          bundle config set build.torch-rb --with-torch-dir=$PWD/libtorch
+          bundle install
+      - run: bundle exec rake test
+      - run: bundle exec rubocop
+
+  lint:
+    name: rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - run: gem install rubocop
+      - run: rubocop

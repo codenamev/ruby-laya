@@ -1,0 +1,20 @@
+{
+  "encoder": "unused/offline",
+  "head_layers": 1,
+  "act_costs": {
+    "act": 0
+  },
+  "max_len": 64,
+  "head_max_len": 32,
+  "amp_dtype": "fp16",
+  "temperature": [
+    1.0,
+    1.2,
+    0.8
+  ],
+  "temperature_by_options": {
+    "choice:2": 1.5,
+    "choice:3-5": 0.1006,
+    "noul:2": 1.1
+  }
+}

@@ -1,0 +1,48 @@
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "vendor/**/*"
+    - "tmp/**/*"
+    - "test/fixtures/**/*"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/Documentation:
+  Enabled: false
+Style/NumericPredicate:
+  Enabled: false
+Style/FormatStringToken:
+  Enabled: false
+Naming/MethodParameterName:
+  MinNameLength: 1
+Naming/VariableNumber:
+  Enabled: false
+Naming/PredicateMethod:
+  Enabled: false
+Naming/PredicatePrefix:
+  Enabled: false
+Naming/AccessorMethodName:
+  Enabled: false
+Metrics:
+  Enabled: false
+Layout/LineLength:
+  Max: 120
+Lint/DuplicateBranch:
+  Enabled: false
+Style/MultipleComparison:
+  Enabled: false
+Style/OptionalBooleanParameter:
+  Enabled: false
+Style/IfUnlessModifier:
+  Enabled: false
+Style/GuardClause:
+  Enabled: false
+Style/SoleNestedConditional:
+  Enabled: false
+Naming/VariableName:
+  Exclude:
+    - "lib/laya/encoders/*.rb" # ivars mirror the PyTorch parameter names (Wqkv, Wo, LayerNorm)
+Style/ItAssignment:
+  Enabled: false
