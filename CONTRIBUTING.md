@@ -29,6 +29,20 @@ bundle exec rake fixtures
 If regenerating changes a fixture, say so in the pull request and explain which upstream release
 caused it.
 
+## The no-runtime promise
+
+Routing, language detection, email cleaning, the presets, the shortlist and the decision DSL must
+work with neither ONNX Runtime nor the tokenizers gem installed, and CI has a job that proves it.
+Reproduce that job locally before touching anything those files load:
+
+```bash
+gem install --install-dir /tmp/baregems minitest
+GEM_HOME=/tmp/baregems GEM_PATH=/tmp/baregems ruby -Ilib -Itest test/hub_test.rb
+```
+
+A constant that reaches `Laya::Agent` from one of those files pulls the whole runtime in with it,
+which is how `Agent::RUNTIME_FILES` briefly broke that job.
+
 ## Before a pull request
 
 - `bundle exec rake test` and `bundle exec rubocop` both pass.

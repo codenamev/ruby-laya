@@ -18,8 +18,8 @@ module Laya
   # Every question in a call is answered in one forward pass. The weights are the ones Convai
   # Innovations published, exported to ONNX; see {Checkpoints}.
   class Agent
-    # What a checkpoint directory must hold, and all the gem downloads.
-    RUNTIME_FILES = ["model.onnx", "onnx_config.json", "rl_agent_config.json", "tokenizer/*"].freeze
+    # What a checkpoint directory must hold; see {Laya::Checkpoints::RUNTIME_FILES}.
+    RUNTIME_FILES = Checkpoints::RUNTIME_FILES
 
     # The traced graph fixes the branch upstream picks at runtime for a one-option question, so a
     # batch always carries at least two markers; the spare is masked off and scores nothing.

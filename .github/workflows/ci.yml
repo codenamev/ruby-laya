@@ -46,7 +46,7 @@ jobs:
       - run: |
           for file in test/parity_test.rb test/common_test.rb test/result_test.rb \
                       test/router_test.rb test/hub_test.rb test/shortlist_test.rb \
-                      test/py_json_test.rb; do
+                      test/decision_test.rb test/py_json_test.rb; do
             ruby -Ilib -Itest "$file" || exit 1
           done
 

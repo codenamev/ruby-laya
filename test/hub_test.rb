@@ -40,7 +40,7 @@ class HubTest < Minitest::Test
     files = %w[model.onnx onnx_config.json rl_agent_config.json tokenizer/tokenizer.json
                tokenizer/tokenizer_config.json README.md multilingual/model.onnx
                multilingual/tokenizer/tokenizer.json]
-    wanted = Laya::Agent::RUNTIME_FILES.map { |pattern| "multilingual/#{pattern}" }
+    wanted = Laya::Checkpoints::RUNTIME_FILES.map { |pattern| "multilingual/#{pattern}" }
 
     assert_equal %w[multilingual/model.onnx multilingual/tokenizer/tokenizer.json],
                  Laya::Hub.filter(files, wanted)

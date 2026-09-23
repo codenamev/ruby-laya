@@ -204,7 +204,7 @@ class AgentTest < Minitest::Test
 
     assert_equal Laya::Checkpoints.onnx_repo, call[:repo]
     assert_equal "multilingual", call[:subfolder]
-    assert_equal Laya::Agent::RUNTIME_FILES, call[:allow_patterns]
+    assert_equal Laya::Checkpoints::RUNTIME_FILES, call[:allow_patterns]
     assert_equal "t", call[:token]
     assert_equal "main", call[:revision]
     assert_equal "refund me", loaded.tokenizer.decode(loaded.tokenizer.encode_ids("refund me"))

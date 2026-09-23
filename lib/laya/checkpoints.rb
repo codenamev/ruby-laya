@@ -18,6 +18,10 @@ module Laya
 
     NAMES = %w[english multilingual typed-decisions].freeze
 
+    # What an exported checkpoint consists of, and so what the gem downloads. Here rather than on
+    # the runtime, because it describes the files, not how they are executed.
+    RUNTIME_FILES = ["model.onnx", "onnx_config.json", "rl_agent_config.json", "tokenizer/*"].freeze
+
     # name => [upstream bundle subfolder, standalone upstream repo, ONNX subfolder]
     SOURCES = {
       "english" => [nil, "convaiinnovations/laya", "english"],
