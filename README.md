@@ -35,9 +35,11 @@ compiler involved. Ruby 3.3 or newer.
 
 The gem runs [ONNX exports](https://huggingface.co/codenamev/laya-onnx) of the published
 checkpoints, downloaded on first use into the standard Hugging Face cache
-(`HF_HOME`, `HF_HUB_CACHE`, `HF_HUB_OFFLINE` and `HF_TOKEN` all work as usual). The exports are
-byte-for-byte reproducible from [`tools/export_onnx.py`](tools/export_onnx.py), and the weights
-inside them are the ones Convai Innovations published.
+(`HF_HOME`, `HF_HUB_CACHE`, `HF_HUB_OFFLINE` and `HF_TOKEN` all work as usual). The first call
+fetches about 820 MB for the English checkpoint and takes roughly half a minute; after that it is
+cached. The exports are reproducible from [`tools/export_onnx.py`](tools/export_onnx.py), and the
+weights inside them are the ones Convai Innovations published. Point `LAYA_ONNX_REPO` at your own
+repository to serve a mirror or your own fine-tuned export.
 
 ## Quickstart: route mode
 
