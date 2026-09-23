@@ -50,6 +50,7 @@ Maintainers only. Bump `Laya::VERSION`, write the CHANGELOG entry, then tag:
 git tag -a v0.1.0 -m "v0.1.0" && git push origin v0.1.0
 ```
 
-The release workflow builds the gem, checks the tag against the version, and publishes to RubyGems
-through trusted publishing. Model exports are published separately with `tools/publish_onnx.py`
+The release workflow builds the gem, runs the suite, checks the tag against the version, and
+publishes to RubyGems through trusted publishing, so no API key is ever stored. It runs in the
+`release` GitHub environment, which must match the environment registered on RubyGems. Model exports are published separately with `tools/publish_onnx.py`
 when upstream ships new checkpoints.

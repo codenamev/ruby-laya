@@ -13,3 +13,4 @@ Gemfile.lock
 .hf_token
 hf_token*
 
+pkg/

@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0
+## 0.1.0 - 2026-09-23
 
 First release: a Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.7.
 
