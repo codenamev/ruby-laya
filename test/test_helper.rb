@@ -3,7 +3,6 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "laya"
 require "minitest/autorun"
-require "minitest/mock"
 require "json"
 
 module LayaTest
@@ -31,6 +30,21 @@ module LayaTest
     rescue LoadError
       false
     end
+  end
+
+  # Swap one singleton method for the duration of a block, then put it back.
+  #
+  # Minitest 6 moved #stub into a separate gem that will not activate against it, and the whole
+  # need here is four lines, so the suite carries its own rather than a dependency that breaks
+  # on somebody else's resolution.
+  def self.stubbing(object, name, replacement)
+    singleton = object.singleton_class
+    original = singleton.instance_method(name)
+    callable = replacement.respond_to?(:call) ? replacement : ->(*) { replacement }
+    singleton.define_method(name, callable)
+    yield
+  ensure
+    singleton.define_method(name, original)
   end
 
   # Load the tiny checkpoint without its clamp warning on stderr.
@@ -70,6 +84,11 @@ module Minitest
       else
         assert_value expected, actual, label
       end
+    end
+
+    # See {LayaTest.stubbing}.
+    def with_stub(object, name, replacement, &)
+      LayaTest.stubbing(object, name, replacement, &)
     end
 
     # assert_equal, but `nil` is expected rather than a mistake.

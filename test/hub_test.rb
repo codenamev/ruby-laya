@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "test_helper"
-require "minitest/mock"
 require "tmpdir"
 
 class HubTest < Minitest::Test
@@ -58,9 +57,9 @@ class HubTest < Minitest::Test
         File.write(local, "content of #{path}")
       end
 
-      Laya::Hub.stub(:resolve_revision, "sha123") do
-        Laya::Hub.stub(:list_files, ->(*) { %w[english/model.onnx english/onnx_config.json README.md] }) do
-          Laya::Hub.stub(:download, fetch) do
+      with_stub(Laya::Hub, :resolve_revision, "sha123") do
+        with_stub(Laya::Hub, :list_files, ->(*) { %w[english/model.onnx english/onnx_config.json README.md] }) do
+          with_stub(Laya::Hub, :download, fetch) do
             target = Laya::Hub.snapshot("codenamev/laya-onnx", subfolder: "english",
                                                                allow_patterns: ["model.onnx", "onnx_config.json"],
                                                                cache_dir: dir)
@@ -82,8 +81,8 @@ class HubTest < Minitest::Test
 
   def test_no_matching_files_is_an_error_worth_reading
     Dir.mktmpdir do |dir|
-      Laya::Hub.stub(:resolve_revision, "sha") do
-        Laya::Hub.stub(:list_files, ->(*) { ["README.md"] }) do
+      with_stub(Laya::Hub, :resolve_revision, "sha") do
+        with_stub(Laya::Hub, :list_files, ->(*) { ["README.md"] }) do
           error = assert_raises(Laya::DownloadError) do
             Laya::Hub.snapshot("org/name", allow_patterns: ["model.onnx"], cache_dir: dir)
           end
@@ -99,14 +98,14 @@ class HubTest < Minitest::Test
       FileUtils.mkdir_p(File.join(root, "refs"))
       File.write(File.join(root, "refs", "main"), "cached-sha")
 
-      Laya::Hub.stub(:list_files, ->(*) { raise Laya::DownloadError, "offline" }) do
+      with_stub(Laya::Hub, :list_files, ->(*) { raise Laya::DownloadError, "offline" }) do
         LayaTest.quietly do
           assert_equal "cached-sha", Laya::Hub.resolve_revision("org/name", "main", root: root)
         end
       end
 
       empty = Laya::Hub.repo_dir("org/other", cache_dir: dir)
-      Laya::Hub.stub(:list_files, ->(*) { raise Laya::DownloadError, "offline" }) do
+      with_stub(Laya::Hub, :list_files, ->(*) { raise Laya::DownloadError, "offline" }) do
         assert_raises(Laya::DownloadError) { Laya::Hub.resolve_revision("org/other", "main", root: empty) }
       end
     end

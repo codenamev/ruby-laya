@@ -42,7 +42,7 @@ jobs:
           ruby-version: "3.3"
       # Routing, language detection, email cleaning and the shortlist must work with neither
       # ONNX Runtime nor the tokenizers gem installed.
-      - run: gem install minitest minitest-mock
+      - run: gem install minitest
       - run: |
           for file in test/parity_test.rb test/common_test.rb test/result_test.rb \
                       test/router_test.rb test/hub_test.rb test/shortlist_test.rb \
