@@ -1,8 +1,6 @@
 # Changelog
 
-## Unreleased
-
-### 0.1.0
+## 0.1.0
 
 First release: a Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.7.
 
@@ -29,3 +27,7 @@ First release: a Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.
 
 Not ported: upstream's `serve.py` HTTP server, and training itself. The scoring arithmetic behind
 training (`Laya::Training`) is included.
+
+Known gaps, with the measurements behind them, are in
+[ROADMAP.md](ROADMAP.md): the shortlist's built-in embedder ranks no better than chance, calibration
+is unfitted on the multilingual checkpoint, and label sets in the dozens need a two-stage question.

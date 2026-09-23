@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>ruby-laya</title>
+<meta name="description" content="Typed decisions over any state in one forward pass, in Ruby, on your own machine." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
+<style>
+  :root {
+    --ground: #fbf8f7;
+    --surface: #ffffff;
+    --raised: #f5efee;
+    --ink: #191315;
+    --muted: #6c6166;
+    --line: #e9e0e0;
+    --accent: #a4203c;
+    --accent-soft: #f6dfe4;
+    --on-accent: #fffaf9;
+    --good: #18654b;
+    --flat: #b6a9ad;
+    --shadow: 0 1px 2px rgba(25, 19, 21, .05), 0 8px 24px -16px rgba(25, 19, 21, .25);
+    --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #130f11;
+      --surface: #1b1618;
+      --raised: #241d20;
+      --ink: #f3edef;
+      --muted: #a2969b;
+      --line: #2e2529;
+      --accent: #ee6a83;
+      --accent-soft: #3d1f27;
+      --on-accent: #1b0d11;
+      --good: #58bd99;
+      --flat: #584b50;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #130f11;
+    --surface: #1b1618;
+    --raised: #241d20;
+    --ink: #f3edef;
+    --muted: #a2969b;
+    --line: #2e2529;
+    --accent: #ee6a83;
+    --accent-soft: #3d1f27;
+    --on-accent: #1b0d11;
+    --good: #58bd99;
+    --flat: #584b50;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 17px/1.6 var(--body);
+    padding-inline: 20px;
+  }
+  .wrap { max-width: 1080px; margin-inline: auto; }
+  a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -.015em; }
+  p { margin: 0; }
+  code, pre, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ---------------------------------------------------------------- masthead */
+  .masthead {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding-block: 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap;
+  }
+  .mark { font-family: var(--mono); font-weight: 500; font-size: 15px; letter-spacing: -.02em; }
+  .mark b { color: var(--accent); font-weight: 500; }
+  .masthead nav { display: flex; gap: 20px; font-size: 14px; }
+  .masthead nav a { color: var(--muted); text-decoration: none; }
+  .masthead nav a:hover { color: var(--ink); }
+
+  /* ---------------------------------------------------------------- hero */
+  .hero { display: grid; grid-template-columns: 1fr; gap: 40px; padding-block: 56px 64px; }
+  @media (min-width: 900px) { .hero { grid-template-columns: 1.02fr .98fr; gap: 56px; align-items: start; } }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 18px;
+  }
+  h1 { font-size: clamp(38px, 6.4vw, 60px); line-height: 1.03; }
+  .lede { font-size: clamp(17px, 2.1vw, 20px); color: var(--muted); margin-top: 20px; max-width: 34em; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  .install { margin-top: 30px; }
+  .install pre {
+    margin: 0; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; font-size: 14px; overflow-x: auto;
+  }
+  .install pre::before { content: "$ "; color: var(--flat); }
+  .install .note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .install .note code { font-size: 12.5px; background: var(--raised); padding: 1px 5px; border-radius: 4px; }
+
+  .cta { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 7px;
+    font-size: 15px; font-weight: 500; text-decoration: none; border: 1px solid transparent;
+  }
+  .btn.primary { background: var(--accent); color: var(--on-accent); }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { border-color: var(--line); color: var(--ink); background: var(--surface); }
+  .btn.ghost:hover { border-color: var(--muted); }
+
+  /* ---------------------------------------------------------------- readout */
+  .readout {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .readout header {
+    padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex;
+    justify-content: space-between; align-items: baseline; gap: 12px; background: var(--raised);
+  }
+  .readout header .what { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+  .readout header .when { font-family: var(--mono); font-size: 12.5px; color: var(--accent); }
+  .state { padding: 16px 18px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .state .field { color: var(--flat); font-family: var(--mono); font-size: 12px; }
+  .answers { display: grid; }
+  .answer { padding: 14px 18px; display: grid; gap: 8px; border-bottom: 1px solid var(--line); }
+  .answer:last-child { border-bottom: 0; }
+  .answer .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .answer .key { font-family: var(--mono); font-size: 13px; }
+  .answer .val { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+  .answer .val em { font-style: normal; color: var(--accent); }
+  .bars { display: grid; gap: 4px; }
+  .bar { display: grid; grid-template-columns: 96px 1fr 46px; align-items: center; gap: 10px; font-size: 11.5px; color: var(--muted); }
+  .bar .track { height: 6px; background: var(--raised); border-radius: 99px; overflow: hidden; }
+  .bar .fill { height: 100%; background: var(--flat); border-radius: 99px; }
+  .bar.win .fill { background: var(--accent); }
+  .bar .pct { font-family: var(--mono); text-align: right; }
+  .single { display: grid; grid-template-columns: 1fr 46px; gap: 10px; align-items: center; }
+
+  /* ---------------------------------------------------------------- sections */
+  section { padding-block: 56px; border-top: 1px solid var(--line); }
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px;
+  }
+  h2 { font-size: clamp(26px, 3.4vw, 34px); line-height: 1.12; }
+  .sub { color: var(--muted); margin-top: 14px; max-width: 62ch; }
+
+  .primitives { display: grid; gap: 18px; margin-top: 34px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .primitives { grid-template-columns: repeat(3, 1fr); } }
+  .primitive { border: 1px solid var(--line); border-radius: 10px; padding: 20px; background: var(--surface); display: grid; gap: 12px; align-content: start; }
+  .primitive h3 { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--accent); }
+  .primitive p { font-size: 14.5px; color: var(--muted); }
+  .primitive .ruby { font-family: var(--mono); font-size: 12.5px; color: var(--ink); background: var(--raised); padding: 8px 10px; border-radius: 6px; overflow-x: auto; }
+
+  pre.code {
+    margin: 26px 0 0; padding: 20px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; font-size: 13.5px; line-height: 1.7; overflow-x: auto;
+  }
+  pre.code .c { color: var(--muted); }
+  pre.code .s { color: var(--good); }
+  pre.code .k { color: var(--accent); }
+
+  .split { display: grid; gap: 34px; grid-template-columns: 1fr; }
+  @media (min-width: 880px) { .split { grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; } }
+
+  /* ---------------------------------------------------------------- table */
+  .scroller { overflow-x: auto; margin-top: 30px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 620px; }
+  caption { text-align: left; color: var(--muted); font-size: 13px; padding-bottom: 12px; }
+  th, td { text-align: left; padding: 11px 14px 11px 0; border-bottom: 1px solid var(--line); }
+  thead th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  tbody th { font-weight: 500; font-size: 14px; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  tr.laya th, tr.laya td { background: var(--accent-soft); }
+  tr.laya th:first-child { border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
+  .lead { color: var(--good); font-weight: 600; }
+  .scorebar { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: center; min-width: 120px; }
+  .scorebar .track { height: 5px; background: var(--raised); border-radius: 99px; overflow: hidden; }
+  .scorebar .fill { height: 100%; background: var(--flat); border-radius: 99px; }
+  tr.laya .scorebar .fill { background: var(--accent); }
+
+  .verdict { display: grid; gap: 14px; margin-top: 30px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .verdict { grid-template-columns: 1fr 1fr; gap: 20px; } }
+  .verdict div { border-left: 2px solid var(--line); padding-left: 16px; }
+  .verdict .h { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+  .verdict.win div:first-child { border-left-color: var(--accent); }
+  .verdict p { font-size: 14.5px; color: var(--muted); }
+
+  .facts { display: grid; gap: 0; margin-top: 26px; border-top: 1px solid var(--line); }
+  .fact { display: grid; grid-template-columns: 180px 1fr; gap: 16px; padding-block: 13px; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .fact dt { color: var(--muted); font-family: var(--mono); font-size: 12.5px; padding-top: 2px; }
+  .fact dd { margin: 0; }
+  @media (max-width: 560px) { .fact { grid-template-columns: 1fr; gap: 4px; } }
+
+  footer { border-top: 1px solid var(--line); padding-block: 36px 52px; color: var(--muted); font-size: 14px; display: grid; gap: 14px; }
+  footer .links { display: flex; gap: 18px; flex-wrap: wrap; }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="mark">ruby<b>-</b>laya</div>
+    <nav>
+      <a href="#primitives">Primitives</a>
+      <a href="#routing">Routing</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="https://github.com/codenamev/ruby-laya">GitHub</a>
+    </nav>
+  </div>
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">System 1 decisions for Ruby</div>
+      <h1>Decisions, not text.</h1>
+      <p class="lede">
+        Ask typed questions about any state and get back labels, levels and calibrated
+        probabilities your code can branch on. Every question in one forward pass,
+        <strong>on your own machine</strong>, with nothing to parse and nothing to hallucinate.
+      </p>
+      <div class="install">
+        <pre>bundle add ruby-laya</pre>
+        <p class="note">
+          Ruby 3.3+. No Python, no LibTorch, no compiler. Until 0.1.0 reaches RubyGems, point
+          Bundler at the repo: <code>gem "ruby-laya", github: "codenamev/ruby-laya"</code>
+        </p>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/codenamev/ruby-laya">Read the docs</a>
+        <a class="btn ghost" href="#benchmarks">See the numbers</a>
+      </div>
+    </div>
+
+    <div class="readout" aria-label="A real prediction from the English checkpoint">
+      <header>
+        <span class="what">agent.predict(email, questions)</span>
+        <span class="when">155 ms · local CPU</span>
+      </header>
+      <div class="state">
+        <span class="field">subject</span> Duplicate charge on invoice #4411<br />
+        <span class="field">body</span> We were billed twice for March. Please refund the
+        duplicate today or we will cancel our plan.
+      </div>
+      <div class="answers">
+        <div class="answer">
+          <div class="top">
+            <span class="key">department</span>
+            <span class="val"><em>billing</em> · 0.84 confidence</span>
+          </div>
+          <div class="bars">
+            <div class="bar win"><span>billing</span><span class="track"><span class="fill" style="width:96%"></span></span><span class="pct">.959</span></div>
+            <div class="bar"><span>sales</span><span class="track"><span class="fill" style="width:1.5%"></span></span><span class="pct">.015</span></div>
+            <div class="bar"><span>technical</span><span class="track"><span class="fill" style="width:1.4%"></span></span><span class="pct">.014</span></div>
+            <div class="bar"><span>other</span><span class="track"><span class="fill" style="width:1.2%"></span></span><span class="pct">.012</span></div>
+          </div>
+        </div>
+        <div class="answer">
+          <div class="top">
+            <span class="key">urgency</span>
+            <span class="val"><em>1.36</em> of 2 · &ldquo;soon&rdquo;</span>
+          </div>
+          <div class="bars">
+            <div class="bar"><span>not urgent</span><span class="track"><span class="fill" style="width:13%"></span></span><span class="pct">.133</span></div>
+            <div class="bar"><span>soon</span><span class="track"><span class="fill" style="width:38%"></span></span><span class="pct">.377</span></div>
+            <div class="bar win"><span>critical</span><span class="track"><span class="fill" style="width:49%"></span></span><span class="pct">.489</span></div>
+          </div>
+        </div>
+        <div class="answer">
+          <div class="top">
+            <span class="key">churn_risk</span>
+            <span class="val"><em>0.827</em> probability</span>
+          </div>
+          <div class="single"><span class="track" style="height:6px;background:var(--raised);border-radius:99px;overflow:hidden"><span class="fill" style="display:block;height:100%;width:82.7%;background:var(--accent);border-radius:99px"></span></span><span class="pct" style="font-size:11.5px;color:var(--muted);text-align:right">.827</span></div>
+        </div>
+        <div class="answer">
+          <div class="top">
+            <span class="key">refund_requested</span>
+            <span class="val"><em>0.856</em> probability</span>
+          </div>
+          <div class="single"><span class="track" style="height:6px;background:var(--raised);border-radius:99px;overflow:hidden"><span class="fill" style="display:block;height:100%;width:85.6%;background:var(--accent);border-radius:99px"></span></span><span class="pct" style="font-size:11.5px;color:var(--muted);text-align:right">.856</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="primitives">
+    <div class="kicker">Three question types</div>
+    <h2>Every answer is a type, and a distribution.</h2>
+    <p class="sub">
+      Questions are data, so they live in your code, your database or your config. The answer
+      carries the full distribution, so a threshold is a decision you make rather than one the
+      model makes for you.
+    </p>
+    <div class="primitives">
+      <div class="primitive">
+        <h3>choice</h3>
+        <p>One label from a set you define, with a probability for each option.</p>
+        <div class="ruby">answer.choice&nbsp;&nbsp;# =&gt; "billing"<br />answer.probability("sales")</div>
+      </div>
+      <div class="primitive">
+        <h3>score</h3>
+        <p>A position on ordered levels you describe, weighted across the whole rubric.</p>
+        <div class="ruby">answer.score&nbsp;&nbsp;# =&gt; 1.36<br />answer.label&nbsp;&nbsp;# =&gt; "soon"</div>
+      </div>
+      <div class="primitive">
+        <h3>noul</h3>
+        <p>The calibrated probability that a statement holds. No separate confidence to reconcile.</p>
+        <div class="ruby">answer.probability # =&gt; 0.827<br />answer.true?(0.9)&nbsp;&nbsp;# =&gt; false</div>
+      </div>
+    </div>
+
+<pre class="code"><span class="c"># Four questions, one forward pass, one result object.</span>
+result = agent.predict(email, {
+  department: { type: <span class="k">:choice</span>, instructions: <span class="s">"Which department should handle this?"</span>,
+                criteria: { billing: <span class="s">"invoices, payments, refunds"</span>,
+                            technical: <span class="s">"bugs, outages, system errors"</span>,
+                            other: <span class="s">"everything else"</span> } },
+  urgency:    { type: <span class="k">:score</span>, instructions: <span class="s">"How urgent is this?"</span>,
+                criteria: [<span class="s">"not urgent"</span>, <span class="s">"soon"</span>, <span class="s">"critical deadline"</span>] },
+  churn_risk: { type: <span class="k">:noul</span>,  instructions: <span class="s">"Does the user threaten to cancel?"</span> }
+})
+
+<span class="c"># Gate on confidence, because the probabilities are trained to mean something.</span>
+<span class="k">if</span> result[<span class="k">:department</span>].confidence &gt;= 0.85
+  route_to result[<span class="k">:department</span>].choice
+<span class="k">else</span>
+  escalate_to_human result
+<span class="k">end</span>
+
+result.to_h <span class="c"># the payload upstream's Python returns, ready for JSON</span></pre>
+  </section>
+
+  <section id="routing">
+    <div class="split">
+      <div>
+        <div class="kicker">Routing</div>
+        <h2>Three checkpoints. It picks.</h2>
+        <p class="sub">
+          Script and language detection runs in pure Ruby, before any inference, and sends each
+          request to the checkpoint that can read it. The English model does not degrade on
+          Devanagari or Han, it collapses while staying confident, so the choice has to be made
+          before the forward pass rather than after.
+        </p>
+        <p class="sub">
+          Two checkpoints stay resident by default, and loading is thread-safe while inference
+          is not serialized behind it. Tell it the language when you already know.
+        </p>
+      </div>
+<pre class="code">router = <span class="k">Laya::Router</span>.new(preload: <span class="k">true</span>)
+
+router.predict(hindi_ticket, questions).routing.model
+<span class="c"># =&gt; "multilingual"</span>
+
+router.predict(hindi_ticket, questions).routing.reason
+<span class="c"># =&gt; "non-Latin script (devanagari, 100% of letters);</span>
+<span class="c">#     the English checkpoint cannot read it"</span>
+
+router.predict(ticket, questions, lang: <span class="s">"pt-BR"</span>)
+router.predict(ticket, questions, model: <span class="s">"typed-decisions"</span>)</pre>
+    </div>
+  </section>
+
+  <section id="benchmarks">
+    <div class="kicker">Benchmarks</div>
+    <h2>Measured against the hosted alternative, including where it loses.</h2>
+    <p class="sub">
+      Jev 1.13.0 is the hosted decision model whose API this mirrors, so it receives byte-identical
+      questions. Three general models answer the same questions through OpenRouter, constrained to
+      the label set with structured outputs. 500 items per set, drawn with a fixed seed.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <caption>Accuracy, 2026-09-23 · ruby-laya 0.1.0 · Apple M5 Max, CPU only</caption>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">AG News <span class="num">4</span></th>
+            <th scope="col">Emotion <span class="num">6</span></th>
+            <th scope="col">Banking77 <span class="num">77</span></th>
+            <th scope="col">MASSIVE <span class="num">17, 12 langs</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="laya">
+            <th scope="row">ruby-laya, local</th>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:91.8%"></span></span><span class="lead">.918</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.4%"></span></span><span>.574</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:39%"></span></span><span>.390</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.5%"></span></span><span>.575</span></span></td>
+          </tr>
+          <tr>
+            <th scope="row">jev-1.13.0</th>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:86.6%"></span></span><span>.866</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.4%"></span></span><span>.574</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:80.8%"></span></span><span class="lead">.808</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:86.8%"></span></span><span class="lead">.868</span></span></td>
+          </tr>
+          <tr>
+            <th scope="row">qwen3-30b-a3b</th>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:85.6%"></span></span><span>.856</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:54.6%"></span></span><span>.546</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:72.4%"></span></span><span>.724</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:84.8%"></span></span><span>.848</span></span></td>
+          </tr>
+          <tr>
+            <th scope="row">gemini-3.1-flash-lite</th>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:82.6%"></span></span><span>.826</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:55%"></span></span><span>.550</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:78.4%"></span></span><span>.784</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:84.8%"></span></span><span>.848</span></span></td>
+          </tr>
+          <tr>
+            <th scope="row">gpt-5-nano</th>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:71%"></span></span><span>.710</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:56.6%"></span></span><span>.566</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:71%"></span></span><span>.710</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:79.9%"></span></span><span>.799</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict win">
+      <div>
+        <div class="h">What it wins</div>
+        <p>
+          AG News by five points over Jev, and the margin survives a paired test on the same items
+          (p = 0.0005). It answers in 42 to 153 ms against 208 to 217 ms for the hosted model and
+          about a second for the LLMs, costs nothing per call, keeps the data on your machine, and
+          returns the same answer every time. Jev's answers moved between two runs; these did not.
+        </p>
+      </div>
+      <div>
+        <div class="h">What it loses</div>
+        <p>
+          With 77 labels it reaches .390 against Jev's .808, because the options share one token
+          budget. On multilingual intent it reaches .575 against .868. Raising the budget buys
+          .048 and telling the router the language buys .023, so both gaps belong to the
+          checkpoints. The <a href="https://github.com/codenamev/ruby-laya/blob/main/ROADMAP.md">roadmap</a>
+          says what would move them.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="kicker">What you are installing</div>
+    <h2>Two prebuilt gems and a download.</h2>
+    <dl class="facts">
+      <div class="fact"><dt>dependencies</dt><dd>ONNX Runtime and Hugging Face tokenizers, both shipping prebuilt binaries. Nothing compiles.</dd></div>
+      <div class="fact"><dt>first call</dt><dd>Fetches the English checkpoint, about 820 MB, into the standard Hugging Face cache. Respects <code>HF_HOME</code>, <code>HF_HUB_OFFLINE</code> and <code>HF_TOKEN</code>.</dd></div>
+      <div class="fact"><dt>weights</dt><dd>ONNX exports of the checkpoints Convai Innovations published, verified against PyTorch before they were written.</dd></div>
+      <div class="fact"><dt>without a model</dt><dd>Routing, script and language detection, email cleaning, the question presets and the shortlist are pure Ruby and load without ONNX Runtime.</dd></div>
+      <div class="fact"><dt>faithfulness</dt><dd>Over 3,000 assertions compare this port with fixtures recorded from upstream Python, and an opt-in suite replays 43 calls across nine languages against the real checkpoints.</dd></div>
+    </dl>
+  </section>
+
+  <footer>
+    <div class="links">
+      <a href="https://github.com/codenamev/ruby-laya">GitHub</a>
+      <a href="https://github.com/codenamev/ruby-laya/blob/main/ROADMAP.md">Roadmap</a>
+      <a href="https://github.com/codenamev/ruby-laya/blob/main/benchmarks/results.json">Raw benchmark data</a>
+      <a href="https://huggingface.co/codenamev/laya-onnx">ONNX exports</a>
+      <a href="https://github.com/NandhaKishorM/laya">Upstream Laya</a>
+    </div>
+    <p>
+      A Ruby port of Laya, developed by
+      <a href="https://huggingface.co/convaiinnovations">Convai Innovations</a>. Apache 2.0, as are
+      the checkpoints. The port is maintained separately and its numbers are its own.
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>

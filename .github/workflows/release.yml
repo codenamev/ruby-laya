@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write # RubyGems trusted publishing
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: rubygems
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: The tag must match the gem version
+        run: |
+          version=$(ruby -Ilib -e 'require "laya/version"; print Laya::VERSION')
+          test "$version" = "${GITHUB_REF_NAME#v}" || { echo "gem $version != tag ${GITHUB_REF_NAME#v}"; exit 1; }
+
+      - run: bundle exec rake test
+      - run: bundle exec rubocop
+      - uses: rubygems/release-gem@v1

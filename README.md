@@ -1,5 +1,7 @@
 # ruby-laya
 
+[codenamev.github.io/ruby-laya](https://codenamev.github.io/ruby-laya) · [Benchmarks](#measured-against-jev-and-general-llms) · [Roadmap](ROADMAP.md) · [Changelog](CHANGELOG.md)
+
 **Multilingual, non-autoregressive System 1 decision engine, for Ruby.** A port of
 [Laya](https://github.com/NandhaKishorM/laya): typed decisions (`choice`, `score`, `noul`) over
 any state (text, email, ticket or JSON document) in a single forward pass, with calibrated
@@ -335,6 +337,12 @@ The real-checkpoint test is opt-in, since it needs the 2.3 GB of exports:
 uv run tools/make_real_fixtures.py <pytorch-checkpoints> real.json
 LAYA_REAL_FIXTURES=real.json bundle exec rake test
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). The short version: the parity fixtures are the contract
+with upstream, so regenerate them rather than editing them, and claims about accuracy or speed
+come with a benchmark run. [ROADMAP.md](ROADMAP.md) lists the measured gaps worth working on.
 
 ## License
 
