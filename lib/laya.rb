@@ -27,13 +27,12 @@ require_relative "laya/router"
 # load with the gem. The runtime, which needs ONNX Runtime, is loaded on first use, so a process
 # that only routes never opens a model.
 module Laya
-  autoload :Agent, "laya/agent"
-  autoload :RLAgent, "laya/agent"
-  autoload :Answer, "laya/result"
-  autoload :Question, "laya/question"
-  autoload :Result, "laya/result"
-  autoload :Runtime, "laya/runtime"
-  autoload :Tokenizer, "laya/tokenizer"
+  # Absolute paths, so the runtime still autoloads when the gem was reached by require_relative
+  # rather than through the load path.
+  { Agent: "agent", RLAgent: "agent", Answer: "result", Question: "question", Result: "result",
+    Runtime: "runtime", Tokenizer: "tokenizer" }.each do |constant, file|
+    autoload constant, File.expand_path("laya/#{file}", __dir__)
+  end
 
   class << self
     # Load a checkpoint, by upstream model id or from a directory holding an ONNX export.

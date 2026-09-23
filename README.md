@@ -201,6 +201,11 @@ result.shortlist["intent"]["labels"]   # the labels that were kept
 `embed_fn` is any callable mapping strings to vectors, so a dedicated bi-encoder drops in.
 `predict` itself is unchanged: it scores every criterion it is given.
 
+Use a real bi-encoder. `Laya.embed_fn_from_agent` mean-pools the decision model's own encoder,
+which costs nothing extra but ranks Banking77's labels about as well as choosing at random: the
+pooled states are all within a few hundredths of each other in cosine. It is a starting point, not
+a retriever, and the shortlist is only as good as the embedder behind it.
+
 ## Language and script detection
 
 ```ruby
@@ -213,7 +218,7 @@ Laya.detect_language("Gătește-mi o rețetă")
 Script detection is exact. The Latin-script language guess is a stopword and diacritic heuristic:
 it names a language only on evidence no other language shares, and abstains otherwise.
 
-## Speed
+## Speed against upstream Python
 
 Measured on an Apple M5 Max, CPU only, five triage questions on the English checkpoint, against
 upstream Python on the same machine and the same weights.
@@ -225,11 +230,59 @@ upstream Python on the same machine and the same weights.
 | Five questions | 266 ms | 352 ms |
 | Five questions, multilingual | 114 ms | 141 ms |
 
-Accuracy, calibration and the comparison with other decision models live upstream:
-[README](https://github.com/NandhaKishorM/laya#benchmarks) and
-[BENCHMARKS.md](https://github.com/NandhaKishorM/laya/blob/main/BENCHMARKS.md). The short version:
-the base checkpoints are a fast base to specialise, not a zero-shot decision engine; route between
-them, and fit temperatures before relying on the multilingual probabilities.
+## Measured against Jev and general LLMs
+
+Laya is compared here with [Jev](https://docs.typesafe.ai) 1.13.0, the hosted decision model whose
+API it mirrors, and with three general models through OpenRouter. Jev gets byte-identical question
+definitions; the LLMs get the same instructions and labels, constrained to the label set with
+structured outputs. Accuracy on four public benchmarks, 500 items each:
+
+| | AG News (4 labels) | Emotion (6) | Banking77 (77) | MASSIVE (17, 12 languages) |
+|---|---|---|---|---|
+| **ruby-laya**, local | **0.918** | 0.574 | 0.390 | 0.575 |
+| jev-1.13.0 | 0.866 | 0.574 | **0.808** | **0.868** |
+| qwen3-30b-a3b-instruct | 0.856 | 0.546 | 0.724 | 0.848 |
+| gemini-3.1-flash-lite | 0.826 | 0.550 | 0.784 | 0.848 |
+| gpt-5-nano | 0.710 | 0.566 | 0.710 | 0.799 |
+
+| | p50 latency | $ per 1,000 decisions | calibration (ECE) |
+|---|---|---|---|
+| **ruby-laya**, local | **42 to 153 ms** | **$0** | 0.136 to 0.518 |
+| jev-1.13.0 | 208 to 217 ms | $0.018 to $0.071 | 0.070 to 0.267 |
+| the three LLMs | 0.9 to 2.1 s | $0.011 to $0.451 | 0.041 to 0.385 |
+
+**Where Laya wins.** On AG News it beats every hosted model, and the margin holds up: a paired
+test over the same 500 items gives p = 0.0005. It answers in a fraction of the time, costs
+nothing per call, keeps the data on your machine, and returns the same answer every time. Jev's
+own answers moved slightly between two runs of this benchmark; Laya's did not.
+
+**Where Laya loses, clearly.** With 77 labels it reaches 0.390 against Jev's 0.808, because the
+options share one token budget. Raising that budget and moving to the 1,024-token checkpoint gets
+it to 0.438, so the budget is not the whole story. On multilingual intent it reaches 0.575 against
+Jev's 0.868, and telling the router each item's language only moves it to 0.598, so the gap is the
+checkpoint rather than the routing. Jev handles all twelve languages evenly (0.83 to 0.90) despite
+its documentation calling English primary.
+
+**Calibration.** Jev's confidence is better calibrated on three of the four sets. Laya's is worst
+exactly where its accuracy is (ECE 0.518 on Banking77), so confidence gating will not rescue a
+label set that large.
+
+Read it as: a fast, free, private model that holds its own on small English label sets, and a
+hosted model that is materially better on hard ones. For emotion, nothing separated any of them.
+
+### Method
+
+    uv run tools/fetch_benchmark_data.py bench
+    TYPESAFE_API_KEY=... OPENROUTER_API_KEY=... ruby tools/benchmark.rb --data bench
+
+Full output, including per-language accuracy and token counts, is in
+[`benchmarks/results.json`](benchmarks/results.json). Caveats worth stating: Laya runs locally
+while the others answer over the network from the same machine, so their latency includes the
+round trip; every label is given its own name and a short gloss, which is friendlier to a
+77-label question than long descriptions would be; samples are 500 items drawn with a fixed seed,
+giving roughly ±4 points at 95% confidence; and the whole run cost $0.54. Upstream's published
+Jev figures come from third parties on different samples, and two of them did not reproduce here:
+Jev scored 0.574 on Emotion against the 0.480 upstream cites, and 0.866 on AG News against 0.910.
 
 ## Faithfulness to upstream
 

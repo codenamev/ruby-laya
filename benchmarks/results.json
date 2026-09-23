@@ -1,0 +1,635 @@
+{
+ "generated_at": "2026-09-23T13:14:50Z",
+ "seconds": 1872,
+ "laya_version": "0.1.0",
+ "upstream_version": "0.3.7",
+ "results": [
+  {
+   "engine": "ruby-laya",
+   "dataset": "ag_news",
+   "n": 500,
+   "accuracy": 0.918,
+   "unparseable": 0,
+   "ece": 0.169,
+   "mean_confidence": 0.749,
+   "p50_ms": 55.6,
+   "p95_ms": 79.1,
+   "input_tokens": 58845,
+   "output_tokens": 0,
+   "usd_per_1k": 0.0,
+   "routed": {
+    "english": 500
+   }
+  },
+  {
+   "engine": "ruby-laya",
+   "dataset": "emotion",
+   "n": 500,
+   "accuracy": 0.574,
+   "unparseable": 0,
+   "ece": 0.1759,
+   "mean_confidence": 0.6957,
+   "p50_ms": 52.6,
+   "p95_ms": 64.6,
+   "input_tokens": 50272,
+   "output_tokens": 0,
+   "usd_per_1k": 0.0,
+   "routed": {
+    "english": 1000
+   }
+  },
+  {
+   "engine": "ruby-laya",
+   "dataset": "banking77",
+   "n": 500,
+   "accuracy": 0.39,
+   "unparseable": 0,
+   "ece": 0.5177,
+   "mean_confidence": 0.9077,
+   "p50_ms": 153.1,
+   "p95_ms": 172.0,
+   "input_tokens": 166318,
+   "output_tokens": 0,
+   "usd_per_1k": 0.0,
+   "routed": {
+    "english": 1500
+   }
+  },
+  {
+   "engine": "ruby-laya",
+   "dataset": "massive",
+   "n": 492,
+   "accuracy": 0.5752,
+   "unparseable": 0,
+   "ece": 0.1363,
+   "mean_confidence": 0.6977,
+   "p50_ms": 42.5,
+   "p95_ms": 97.1,
+   "input_tokens": 95348,
+   "output_tokens": 0,
+   "usd_per_1k": 0.0,
+   "by_language": {
+    "ar": {
+     "n": 41,
+     "accuracy": 0.439
+    },
+    "de": {
+     "n": 41,
+     "accuracy": 0.4878
+    },
+    "en": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "es": {
+     "n": 41,
+     "accuracy": 0.5854
+    },
+    "fr": {
+     "n": 41,
+     "accuracy": 0.6341
+    },
+    "hi": {
+     "n": 41,
+     "accuracy": 0.4634
+    },
+    "ja": {
+     "n": 41,
+     "accuracy": 0.6098
+    },
+    "ko": {
+     "n": 41,
+     "accuracy": 0.561
+    },
+    "pt": {
+     "n": 41,
+     "accuracy": 0.5854
+    },
+    "ru": {
+     "n": 41,
+     "accuracy": 0.6098
+    },
+    "th": {
+     "n": 41,
+     "accuracy": 0.5366
+    },
+    "zh-CN": {
+     "n": 41,
+     "accuracy": 0.5366
+    }
+   },
+   "routed": {
+    "english": 1589,
+    "multilingual": 403
+   }
+  },
+  {
+   "engine": "jev-1.13.0",
+   "dataset": "ag_news",
+   "n": 500,
+   "accuracy": 0.866,
+   "unparseable": 0,
+   "ece": 0.0855,
+   "mean_confidence": 0.9357,
+   "p50_ms": 217.3,
+   "p95_ms": 279.4,
+   "input_tokens": 209455,
+   "output_tokens": 24944,
+   "usd_per_1k": 0.0176
+  },
+  {
+   "engine": "jev-1.13.0",
+   "dataset": "emotion",
+   "n": 500,
+   "accuracy": 0.574,
+   "unparseable": 0,
+   "ece": 0.2673,
+   "mean_confidence": 0.8362,
+   "p50_ms": 210.1,
+   "p95_ms": 272.5,
+   "input_tokens": 214254,
+   "output_tokens": 30673,
+   "usd_per_1k": 0.018
+  },
+  {
+   "engine": "jev-1.13.0",
+   "dataset": "banking77",
+   "n": 500,
+   "accuracy": 0.808,
+   "unparseable": 0,
+   "ece": 0.07,
+   "mean_confidence": 0.8726,
+   "p50_ms": 216.2,
+   "p95_ms": 282.3,
+   "input_tokens": 844261,
+   "output_tokens": 414126,
+   "usd_per_1k": 0.0709
+  },
+  {
+   "engine": "jev-1.13.0",
+   "dataset": "massive",
+   "n": 492,
+   "accuracy": 0.8679,
+   "unparseable": 0,
+   "ece": 0.0868,
+   "mean_confidence": 0.9388,
+   "p50_ms": 211.4,
+   "p95_ms": 271.5,
+   "input_tokens": 302144,
+   "output_tokens": 69978,
+   "usd_per_1k": 0.0258,
+   "by_language": {
+    "ar": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "de": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "en": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "es": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "fr": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "hi": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "ja": {
+     "n": 41,
+     "accuracy": 0.9024
+    },
+    "ko": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "pt": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "ru": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "th": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "zh-CN": {
+     "n": 41,
+     "accuracy": 0.878
+    }
+   }
+  },
+  {
+   "engine": "openai/gpt-5-nano",
+   "dataset": "ag_news",
+   "n": 500,
+   "accuracy": 0.71,
+   "unparseable": 0,
+   "ece": 0.1263,
+   "mean_confidence": 0.6243,
+   "p50_ms": 1304.1,
+   "p95_ms": 2047.2,
+   "input_tokens": 93969,
+   "output_tokens": 16126,
+   "usd_per_1k": 0.0223
+  },
+  {
+   "engine": "openai/gpt-5-nano",
+   "dataset": "emotion",
+   "n": 500,
+   "accuracy": 0.566,
+   "unparseable": 0,
+   "ece": 0.041,
+   "mean_confidence": 0.5706,
+   "p50_ms": 1446.8,
+   "p95_ms": 2370.0,
+   "input_tokens": 89589,
+   "output_tokens": 16148,
+   "usd_per_1k": 0.0219
+  },
+  {
+   "engine": "openai/gpt-5-nano",
+   "dataset": "banking77",
+   "n": 500,
+   "accuracy": 0.71,
+   "unparseable": 0,
+   "ece": 0.1679,
+   "mean_confidence": 0.5841,
+   "p50_ms": 1114.2,
+   "p95_ms": 2504.3,
+   "input_tokens": 641619,
+   "output_tokens": 17466,
+   "usd_per_1k": 0.0781
+  },
+  {
+   "engine": "openai/gpt-5-nano",
+   "dataset": "massive",
+   "n": 492,
+   "accuracy": 0.7988,
+   "unparseable": 2,
+   "ece": 0.1945,
+   "mean_confidence": 0.6366,
+   "p50_ms": 920.1,
+   "p95_ms": 1564.8,
+   "input_tokens": 149457,
+   "output_tokens": 15845,
+   "usd_per_1k": 0.0281,
+   "by_language": {
+    "ar": {
+     "n": 41,
+     "accuracy": 0.7073
+    },
+    "de": {
+     "n": 41,
+     "accuracy": 0.8049
+    },
+    "en": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "es": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "fr": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "hi": {
+     "n": 41,
+     "accuracy": 0.7561
+    },
+    "ja": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "ko": {
+     "n": 41,
+     "accuracy": 0.8049
+    },
+    "pt": {
+     "n": 41,
+     "accuracy": 0.7805
+    },
+    "ru": {
+     "n": 41,
+     "accuracy": 0.7805
+    },
+    "th": {
+     "n": 41,
+     "accuracy": 0.8049
+    },
+    "zh-CN": {
+     "n": 41,
+     "accuracy": 0.8049
+    }
+   }
+  },
+  {
+   "engine": "qwen/qwen3-30b-a3b-instruct-2507",
+   "dataset": "ag_news",
+   "n": 500,
+   "accuracy": 0.856,
+   "unparseable": 0,
+   "ece": 0.1124,
+   "mean_confidence": 0.9678,
+   "p50_ms": 1173.3,
+   "p95_ms": 2865.1,
+   "input_tokens": 76367,
+   "output_tokens": 10309,
+   "usd_per_1k": 0.0113
+  },
+  {
+   "engine": "qwen/qwen3-30b-a3b-instruct-2507",
+   "dataset": "emotion",
+   "n": 500,
+   "accuracy": 0.546,
+   "unparseable": 0,
+   "ece": 0.3848,
+   "mean_confidence": 0.9308,
+   "p50_ms": 1247.0,
+   "p95_ms": 3352.5,
+   "input_tokens": 68641,
+   "output_tokens": 10050,
+   "usd_per_1k": 0.0105
+  },
+  {
+   "engine": "qwen/qwen3-30b-a3b-instruct-2507",
+   "dataset": "banking77",
+   "n": 500,
+   "accuracy": 0.724,
+   "unparseable": 0,
+   "ece": 0.2301,
+   "mean_confidence": 0.9541,
+   "p50_ms": 2063.7,
+   "p95_ms": 7503.8,
+   "input_tokens": 422752,
+   "output_tokens": 11274,
+   "usd_per_1k": 0.0451
+  },
+  {
+   "engine": "qwen/qwen3-30b-a3b-instruct-2507",
+   "dataset": "massive",
+   "n": 492,
+   "accuracy": 0.8476,
+   "unparseable": 0,
+   "ece": 0.111,
+   "mean_confidence": 0.9585,
+   "p50_ms": 1350.3,
+   "p95_ms": 5286.2,
+   "input_tokens": 120487,
+   "output_tokens": 9758,
+   "usd_per_1k": 0.0156,
+   "by_language": {
+    "ar": {
+     "n": 41,
+     "accuracy": 0.8049
+    },
+    "de": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "en": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "es": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "fr": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "hi": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "ja": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "ko": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "pt": {
+     "n": 41,
+     "accuracy": 0.8049
+    },
+    "ru": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "th": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "zh-CN": {
+     "n": 41,
+     "accuracy": 0.8537
+    }
+   }
+  },
+  {
+   "engine": "google/gemini-3.1-flash-lite",
+   "dataset": "ag_news",
+   "n": 500,
+   "accuracy": 0.826,
+   "unparseable": 1,
+   "ece": 0.1414,
+   "mean_confidence": 0.9658,
+   "p50_ms": 932.1,
+   "p95_ms": 1889.8,
+   "input_tokens": 116714,
+   "output_tokens": 8386,
+   "usd_per_1k": 0.0835
+  },
+  {
+   "engine": "google/gemini-3.1-flash-lite",
+   "dataset": "emotion",
+   "n": 500,
+   "accuracy": 0.55,
+   "unparseable": 0,
+   "ece": 0.3099,
+   "mean_confidence": 0.8599,
+   "p50_ms": 944.4,
+   "p95_ms": 2253.8,
+   "input_tokens": 110037,
+   "output_tokens": 7917,
+   "usd_per_1k": 0.0788
+  },
+  {
+   "engine": "google/gemini-3.1-flash-lite",
+   "dataset": "banking77",
+   "n": 500,
+   "accuracy": 0.784,
+   "unparseable": 1,
+   "ece": 0.1831,
+   "mean_confidence": 0.9647,
+   "p50_ms": 972.0,
+   "p95_ms": 1616.8,
+   "input_tokens": 828346,
+   "output_tokens": 12154,
+   "usd_per_1k": 0.4506
+  },
+  {
+   "engine": "google/gemini-3.1-flash-lite",
+   "dataset": "massive",
+   "n": 492,
+   "accuracy": 0.8476,
+   "unparseable": 0,
+   "ece": 0.1214,
+   "mean_confidence": 0.969,
+   "p50_ms": 950.8,
+   "p95_ms": 2009.3,
+   "input_tokens": 173689,
+   "output_tokens": 7754,
+   "usd_per_1k": 0.1119,
+   "by_language": {
+    "ar": {
+     "n": 41,
+     "accuracy": 0.8049
+    },
+    "de": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "en": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "es": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "fr": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "hi": {
+     "n": 41,
+     "accuracy": 0.878
+    },
+    "ja": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "ko": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "pt": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "ru": {
+     "n": 41,
+     "accuracy": 0.9024
+    },
+    "th": {
+     "n": 41,
+     "accuracy": 0.8293
+    },
+    "zh-CN": {
+     "n": 41,
+     "accuracy": 0.8293
+    }
+   }
+  }
+ ],
+ "mitigations": [
+  {
+   "engine": "ruby-laya, language known",
+   "dataset": "massive",
+   "n": 492,
+   "accuracy": 0.5976,
+   "unparseable": 0,
+   "ece": 0.1325,
+   "mean_confidence": 0.7122,
+   "p50_ms": 38.8,
+   "p95_ms": 91.2,
+   "input_tokens": 94642,
+   "output_tokens": 0,
+   "usd_per_1k": 0.0,
+   "by_language": {
+    "ar": {
+     "n": 41,
+     "accuracy": 0.439
+    },
+    "de": {
+     "n": 41,
+     "accuracy": 0.5366
+    },
+    "en": {
+     "n": 41,
+     "accuracy": 0.8537
+    },
+    "es": {
+     "n": 41,
+     "accuracy": 0.6829
+    },
+    "fr": {
+     "n": 41,
+     "accuracy": 0.6585
+    },
+    "hi": {
+     "n": 41,
+     "accuracy": 0.4634
+    },
+    "ja": {
+     "n": 41,
+     "accuracy": 0.6098
+    },
+    "ko": {
+     "n": 41,
+     "accuracy": 0.561
+    },
+    "pt": {
+     "n": 41,
+     "accuracy": 0.6829
+    },
+    "ru": {
+     "n": 41,
+     "accuracy": 0.6098
+    },
+    "th": {
+     "n": 41,
+     "accuracy": 0.5366
+    },
+    "zh-CN": {
+     "n": 41,
+     "accuracy": 0.5366
+    }
+   },
+   "routed": {
+    "english": 41,
+    "multilingual": 451
+   }
+  },
+  {
+   "engine": "ruby-laya multilingual head_max_len=512",
+   "dataset": "banking77",
+   "n": 500,
+   "accuracy": 0.438,
+   "unparseable": 0,
+   "ece": 0.4226,
+   "mean_confidence": 0.8606,
+   "p50_ms": 110.5,
+   "p95_ms": 123.4,
+   "input_tokens": 245872,
+   "output_tokens": 0,
+   "usd_per_1k": 0.0
+  }
+ ]
+}

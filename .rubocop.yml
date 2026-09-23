@@ -46,3 +46,7 @@ Naming/VariableName:
     - "lib/laya/encoders/*.rb" # ivars mirror the PyTorch parameter names (Wqkv, Wo, LayerNorm)
 Style/ItAssignment:
   Enabled: false
+Style/OneClassPerFile:
+  Exclude:
+    - "tools/*.rb" # a standalone script keeps its engines together
+    - "test/**/*.rb" # related test cases stay in one file

@@ -21,6 +21,9 @@ First release: a Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.
   arithmetic need no ONNX Runtime at all.
 - **Downloads.** Checkpoints land in the standard Hugging Face cache and honour `HF_HOME`,
   `HF_HUB_CACHE`, `HF_HUB_OFFLINE`, `HF_ENDPOINT` and `HF_TOKEN`.
+- **A measured comparison.** `tools/benchmark.rb` runs Laya, TypeSafe's Jev and general LLMs
+  over the same public benchmarks with the same questions, reporting accuracy, calibration,
+  latency and cost. Results are in `benchmarks/` and summarized in the README.
 - **Faithfulness.** Over 3000 assertions compare this gem with fixtures recorded from upstream
   Python, and an opt-in suite replays 43 calls across nine languages against the real checkpoints.
 

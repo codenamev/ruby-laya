@@ -51,8 +51,15 @@ module Laya
 
     # An `embed_fn` backed by the checkpoint already loaded on `agent`.
     #
-    # It mean-pools the encoder, which is cheap but blunt; a dedicated bi-encoder will usually
-    # shortlist better. The decision head never runs and nothing is downloaded.
+    # It mean-pools the encoder, which costs nothing extra but is not a retriever. Measured on
+    # Banking77's 77 labels it keeps the right label in the top 20 about as often as picking 20
+    # labels at random would: mean-pooled states of this encoder sit within a couple of hundredths
+    # of each other in cosine, so the ranking carries little signal. Centering the batch widens the
+    # spread without improving recall.
+    #
+    # Pass a real bi-encoder as `embed_fn` when the shortlist has to be right. This helper is a
+    # starting point for callers who have nothing else loaded, and worth measuring on your own
+    # labels before relying on it.
     def embed_fn_from_agent(agent, max_length: nil, batch_size: 32)
       Util.positive_int!(max_length, "max_length") unless max_length.nil?
       Util.positive_int!(batch_size, "batch_size")
