@@ -20,7 +20,11 @@ module Laya
     end
 
     def inspect
-      "#<#{self.class.name.split('::').last} #{summary} confidence=#{confidence}>"
+      "#<#{self.class.name} #{summary}>"
+    end
+
+    def to_s
+      summary
     end
 
     private
@@ -45,7 +49,45 @@ module Laya
 
       # The probability of the chosen label, or of `label` when one is given.
       def probability(label = choice)
-        probabilities.fetch(label)
+        probabilities.fetch(label) do
+          probabilities.fetch(label.to_s) do
+            raise KeyError, "no option #{label.inspect}; this question offered #{probabilities.keys.inspect}"
+          end
+        end
+      end
+
+      # The chosen label stands in for itself, so a call site reads as the decision it is:
+      #
+      #   answer == :billing        # => true
+      #   answer.billing?           # => true
+      #   case answer.to_sym ...    # Ruby asks the `when` value, so compare the symbol there
+      def ==(other)
+        case other
+        when Symbol, String then choice.to_s == other.to_s
+        when Answer::Choice then choice == other.choice
+        else super
+        end
+      end
+      alias eql? ==
+
+      def hash = [self.class, choice].hash
+      def to_sym = choice.to_sym
+      def to_s = choice.to_s
+
+      # `answer.billing?` for any label this question offered.
+      def method_missing(name, *args)
+        label = name.to_s.delete_suffix("?")
+        return super unless name.to_s.end_with?("?") && args.empty? && offered?(label)
+
+        choice.to_s == label
+      end
+
+      def respond_to_missing?(name, include_private = false)
+        (name.to_s.end_with?("?") && offered?(name.to_s.delete_suffix("?"))) || super
+      end
+
+      def offered?(label)
+        probabilities.keys.any? { |option| option.to_s == label }
       end
 
       private
@@ -55,7 +97,7 @@ module Laya
       end
 
       def summary
-        "#{choice.inspect} p=#{probability}"
+        format("%s %.1f%%", choice, probability * 100)
       end
     end
 
@@ -75,6 +117,19 @@ module Laya
         legend.fetch(score.round.clamp(0, legend.length - 1).to_s)
       end
 
+      def to_f = score
+      def levels = legend.length
+
+      # Compare against a level index or its text.
+      def ==(other)
+        case other
+        when Numeric then score == other
+        when Symbol, String then label.to_s == other.to_s
+        when Answer::Score then score == other.score
+        else super
+        end
+      end
+
       private
 
       def payload
@@ -82,7 +137,7 @@ module Laya
       end
 
       def summary
-        "#{score} of #{legend.length - 1}"
+        format("%.2f of %d (%s)", score, legend.length - 1, label)
       end
     end
 
@@ -101,6 +156,18 @@ module Laya
         probability > threshold
       end
 
+      def false?(threshold = 0.5) = !true?(threshold)
+      def to_f = probability
+
+      def ==(other)
+        case other
+        when true, false then true? == other
+        when Numeric then probability == other
+        when Answer::Noul then probability == other.probability
+        else super
+        end
+      end
+
       private
 
       def payload
@@ -108,7 +175,7 @@ module Laya
       end
 
       def summary
-        "p=#{probability}"
+        format("%.1f%%", probability * 100)
       end
     end
   end
@@ -130,11 +197,35 @@ module Laya
       @shortlist = shortlist
     end
 
-    # The answer to `id`, raising a helpful error when no such question was asked.
+    # The answer to `id`. A question asked under a symbol can be read back as a string and the
+    # other way around, so a result reads the same whichever form the caller reached for.
     def [](id)
       answers.fetch(id) do
-        raise KeyError, "no question #{id.inspect} in this result; asked: #{answers.keys.inspect}"
+        answers.fetch(id.to_s) do
+          answers.fetch(id.to_sym) do
+            raise KeyError, "no question #{id.inspect} in this result; asked: #{answers.keys.inspect}"
+          end
+        end
       end
+    rescue NoMethodError
+      raise KeyError, "no question #{id.inspect} in this result; asked: #{answers.keys.inspect}"
+    end
+
+    # Answers are also readable by name: `result.department` is `result[:department]`.
+    def method_missing(name, *args)
+      return super unless args.empty? && answered?(name)
+
+      self[name]
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      answered?(name) || super
+    end
+
+    def answered?(name)
+      answers.key?(name) || answers.key?(name.to_s) || answers.key?(name.to_sym)
+    rescue NoMethodError
+      false
     end
 
     def each(&)

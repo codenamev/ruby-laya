@@ -8,9 +8,17 @@ First release: a Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.
   published checkpoints, so installing the gem needs no Python, no LibTorch and no compiler.
   Exports are reproducible from `tools/export_onnx.py` and are verified against PyTorch before
   they are written.
+- **Declare decisions, do not build hashes.** A `Laya::Decision` subclass declares `choice`,
+  `score` and `noul` questions and answers them with readers named after each one, plus a
+  predicate for every noul. `Laya.ask(state).noul(...).decide` covers the ones not worth a class,
+  and `Laya.configure` sets up the shared client. The shipped question sets are decision classes
+  too: `Laya::Guard`, `Laya::Triage`, `Laya::Moderation`, `Laya::EmailTriage`,
+  `Laya::RequestRouting`.
 - **Answers as objects.** `predict` returns a `Laya::Result` whose answers read as
-  `result[:intent].choice`, `.probability`, `.score`, `.label`, `.confidence`. `to_h` renders the
-  payload upstream's Python returns.
+  `triage.department == :billing`, `.billing?`, `.probability`, `.score`, `.label`, `.confidence`,
+  `triage.churn_risk?`. `to_h` renders the payload upstream's Python returns. Equality reads true
+  with the answer on the left only, since `Symbol#==` cannot know about it; `case` takes
+  `.to_sym`.
 - **Routing.** `Laya::Router` detects script and language, picks a checkpoint per request, keeps
   two resident by default, and accepts a `lang_guess` hint or a callable for a real language
   identifier. Loading is thread-safe; inference is not serialized behind it.
@@ -24,6 +32,9 @@ First release: a Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.
   latency and cost. Results are in `benchmarks/` and summarized in the README.
 - **Faithfulness.** Over 3000 assertions compare this gem with fixtures recorded from upstream
   Python, and an opt-in suite replays 43 calls across nine languages against the real checkpoints.
+
+The raw form is still the floor: `agent.predict(state, questions_hash)` takes and returns exactly
+what upstream's Python does, and the parity suite pins it.
 
 Not ported: upstream's `serve.py` HTTP server, and training itself. The scoring arithmetic behind
 training (`Laya::Training`) is included.

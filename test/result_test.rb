@@ -88,7 +88,12 @@ class ResultTest < Minitest::Test
 
   def test_inspect_is_short
     assert_equal '#<Laya::Result ["dept", "urgency", "churn"]>', result.inspect
-    assert_match(/Choice "billing" p=0.7 confidence=0.42/, choice.inspect)
+    assert_equal "#<Laya::Answer::Choice billing 70.0%>", choice.inspect
+    # a choice interpolates as its label, which is what a log line or a string key wants
+    assert_equal "billing", choice.to_s
+    assert_equal "routed to billing", "routed to #{choice}"
+    assert_equal "#<Laya::Answer::Score 1.84 of 2 (angry)>", score.inspect
+    assert_equal "#<Laya::Answer::Noul 89.2%>", noul.inspect
     assert_match(/RouteDecision "english"/, Laya::RouteDecision.new(model: "english", repo: "r",
                                                                     reason: "why").inspect)
   end

@@ -15,6 +15,8 @@ require_relative "laya/shortlist"
 require_relative "laya/training"
 require_relative "laya/hub"
 require_relative "laya/router"
+require_relative "laya/configuration"
+require_relative "laya/questions"
 
 # Laya: a fast, non-autoregressive System 1 decision engine with calibrated probabilities.
 #
@@ -29,9 +31,20 @@ require_relative "laya/router"
 module Laya
   # Absolute paths, so the runtime still autoloads when the gem was reached by require_relative
   # rather than through the load path.
-  { Agent: "agent", RLAgent: "agent", Answer: "result", Question: "question", Result: "result",
-    Runtime: "runtime", Tokenizer: "tokenizer" }.each do |constant, file|
+  { Agent: "agent", RLAgent: "agent", Answer: "result", Ask: "ask", Decision: "decision",
+    Question: "question", Result: "result", Runtime: "runtime", Tokenizer: "tokenizer" }.each do |constant, file|
     autoload constant, File.expand_path("laya/#{file}", __dir__)
+  end
+
+  # The shipped question sets, as decision classes:
+  #
+  #   Laya::Guard.decide(prompt).jailbreak?
+  #   Laya::Triage.decide(message).churn_risk.probability
+  #
+  # Each is a {Decision}, so it subclasses like any other and its questions are readable with
+  # `.questions`. The plain hashes are still there as `Laya.triage_questions` and friends.
+  def self.preset(questions)
+    Decision.define(questions)
   end
 
   class << self
@@ -44,6 +57,18 @@ module Laya
     # Given a block, the agent is closed when the block returns.
     def load(model_id_or_path = Checkpoints::BUNDLE_REPO, **, &)
       Agent.load(model_id_or_path, **, &)
+    end
+
+    # Ask questions about `state` without declaring a class for them.
+    #
+    #   Laya.ask(email)
+    #       .choice(:department, "Which team?", billing: "invoices", technical: "outages")
+    #       .noul(:refund, "Do they want money back?")
+    #       .decide
+    #
+    # Runs on the shared client unless given `client:`; see {Laya.configure}.
+    def ask(state, client: nil, **)
+      Ask.new(state, client: client, **)
     end
 
     # A {Router} that picks a checkpoint per request. Given a block, it is closed afterwards.
@@ -93,4 +118,12 @@ module Laya
     def proper_reward(...) = Training.proper_reward(...)
     def td_lambda_targets(...) = Training.td_lambda_targets(...)
   end
+
+  # The shipped question sets, ready to ask. Declared last so {Decision} and {Presets} are both
+  # in place; each is a plain subclass, so `Laya::Guard.questions` and subclassing both work.
+  Triage = preset(Presets.triage_questions)
+  EmailTriage = preset(Presets.email_questions)
+  Guard = preset(Presets.guard_questions)
+  Moderation = preset(Presets.moderation_questions)
+  RequestRouting = preset(Presets.router_questions)
 end

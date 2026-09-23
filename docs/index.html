@@ -138,12 +138,12 @@
   .answer .val { font-family: var(--mono); font-size: 13px; font-weight: 500; }
   .answer .val em { font-style: normal; color: var(--accent); }
   .bars { display: grid; gap: 4px; }
-  .bar { display: grid; grid-template-columns: 96px 1fr 46px; align-items: center; gap: 10px; font-size: 11.5px; color: var(--muted); }
+  .bar { display: grid; grid-template-columns: 92px 1fr 54px; align-items: center; gap: 10px; font-size: 11.5px; color: var(--muted); }
   .bar .track { height: 6px; background: var(--raised); border-radius: 99px; overflow: hidden; }
   .bar .fill { height: 100%; background: var(--flat); border-radius: 99px; }
   .bar.win .fill { background: var(--accent); }
   .bar .pct { font-family: var(--mono); text-align: right; }
-  .single { display: grid; grid-template-columns: 1fr 46px; gap: 10px; align-items: center; }
+  .single { display: grid; grid-template-columns: 1fr 54px; gap: 10px; align-items: center; }
 
   /* ---------------------------------------------------------------- sections */
   section { padding-block: 56px; border-top: 1px solid var(--line); }
@@ -183,7 +183,7 @@
   tr.laya th, tr.laya td { background: var(--accent-soft); }
   tr.laya th:first-child { border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
   .lead { color: var(--good); font-weight: 600; }
-  .scorebar { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: center; min-width: 120px; }
+  .scorebar { display: grid; grid-template-columns: 88px 54px; gap: 10px; align-items: center; }
   .scorebar .track { height: 5px; background: var(--raised); border-radius: 99px; overflow: hidden; }
   .scorebar .fill { height: 100%; background: var(--flat); border-radius: 99px; }
   tr.laya .scorebar .fill { background: var(--accent); }
@@ -244,7 +244,7 @@
 
     <div class="readout" aria-label="A real prediction from the English checkpoint">
       <header>
-        <span class="what">agent.predict(email, questions)</span>
+        <span class="what">TicketTriage.decide(email)</span>
         <span class="when">155 ms · local CPU</span>
       </header>
       <div class="state">
@@ -256,13 +256,13 @@
         <div class="answer">
           <div class="top">
             <span class="key">department</span>
-            <span class="val"><em>billing</em> · 0.84 confidence</span>
+            <span class="val"><em>billing</em> · 84% confidence</span>
           </div>
           <div class="bars">
-            <div class="bar win"><span>billing</span><span class="track"><span class="fill" style="width:96%"></span></span><span class="pct">.959</span></div>
-            <div class="bar"><span>sales</span><span class="track"><span class="fill" style="width:1.5%"></span></span><span class="pct">.015</span></div>
-            <div class="bar"><span>technical</span><span class="track"><span class="fill" style="width:1.4%"></span></span><span class="pct">.014</span></div>
-            <div class="bar"><span>other</span><span class="track"><span class="fill" style="width:1.2%"></span></span><span class="pct">.012</span></div>
+            <div class="bar win"><span>billing</span><span class="track"><span class="fill" style="width:96%"></span></span><span class="pct">95.9%</span></div>
+            <div class="bar"><span>sales</span><span class="track"><span class="fill" style="width:1.5%"></span></span><span class="pct">1.5%</span></div>
+            <div class="bar"><span>technical</span><span class="track"><span class="fill" style="width:1.4%"></span></span><span class="pct">1.4%</span></div>
+            <div class="bar"><span>other</span><span class="track"><span class="fill" style="width:1.2%"></span></span><span class="pct">1.2%</span></div>
           </div>
         </div>
         <div class="answer">
@@ -271,24 +271,24 @@
             <span class="val"><em>1.36</em> of 2 · &ldquo;soon&rdquo;</span>
           </div>
           <div class="bars">
-            <div class="bar"><span>not urgent</span><span class="track"><span class="fill" style="width:13%"></span></span><span class="pct">.133</span></div>
-            <div class="bar"><span>soon</span><span class="track"><span class="fill" style="width:38%"></span></span><span class="pct">.377</span></div>
-            <div class="bar win"><span>critical</span><span class="track"><span class="fill" style="width:49%"></span></span><span class="pct">.489</span></div>
+            <div class="bar"><span>not urgent</span><span class="track"><span class="fill" style="width:13%"></span></span><span class="pct">13.3%</span></div>
+            <div class="bar"><span>soon</span><span class="track"><span class="fill" style="width:38%"></span></span><span class="pct">37.7%</span></div>
+            <div class="bar win"><span>critical</span><span class="track"><span class="fill" style="width:49%"></span></span><span class="pct">48.9%</span></div>
           </div>
         </div>
         <div class="answer">
           <div class="top">
             <span class="key">churn_risk</span>
-            <span class="val"><em>0.827</em> probability</span>
+            <span class="val"><em>82.7%</em> likely</span>
           </div>
-          <div class="single"><span class="track" style="height:6px;background:var(--raised);border-radius:99px;overflow:hidden"><span class="fill" style="display:block;height:100%;width:82.7%;background:var(--accent);border-radius:99px"></span></span><span class="pct" style="font-size:11.5px;color:var(--muted);text-align:right">.827</span></div>
+          <div class="single"><span class="track" style="height:6px;background:var(--raised);border-radius:99px;overflow:hidden"><span class="fill" style="display:block;height:100%;width:82.7%;background:var(--accent);border-radius:99px"></span></span><span class="pct" style="font-size:11.5px;color:var(--muted);text-align:right">82.7%</span></div>
         </div>
         <div class="answer">
           <div class="top">
             <span class="key">refund_requested</span>
-            <span class="val"><em>0.856</em> probability</span>
+            <span class="val"><em>85.6%</em> likely</span>
           </div>
-          <div class="single"><span class="track" style="height:6px;background:var(--raised);border-radius:99px;overflow:hidden"><span class="fill" style="display:block;height:100%;width:85.6%;background:var(--accent);border-radius:99px"></span></span><span class="pct" style="font-size:11.5px;color:var(--muted);text-align:right">.856</span></div>
+          <div class="single"><span class="track" style="height:6px;background:var(--raised);border-radius:99px;overflow:hidden"><span class="fill" style="display:block;height:100%;width:85.6%;background:var(--accent);border-radius:99px"></span></span><span class="pct" style="font-size:11.5px;color:var(--muted);text-align:right">85.6%</span></div>
         </div>
       </div>
     </div>
@@ -306,39 +306,58 @@
       <div class="primitive">
         <h3>choice</h3>
         <p>One label from a set you define, with a probability for each option.</p>
-        <div class="ruby">answer.choice&nbsp;&nbsp;# =&gt; "billing"<br />answer.probability("sales")</div>
+        <div class="ruby">triage.department == :billing<br />triage.department.confidence</div>
       </div>
       <div class="primitive">
         <h3>score</h3>
         <p>A position on ordered levels you describe, weighted across the whole rubric.</p>
-        <div class="ruby">answer.score&nbsp;&nbsp;# =&gt; 1.36<br />answer.label&nbsp;&nbsp;# =&gt; "soon"</div>
+        <div class="ruby">triage.urgency.score # =&gt; 1.36<br />triage.urgency.label # =&gt; "soon"</div>
       </div>
       <div class="primitive">
         <h3>noul</h3>
         <p>The calibrated probability that a statement holds. No separate confidence to reconcile.</p>
-        <div class="ruby">answer.probability # =&gt; 0.827<br />answer.true?(0.9)&nbsp;&nbsp;# =&gt; false</div>
+        <div class="ruby">triage.churn_risk?&nbsp;&nbsp;# =&gt; true<br />triage.churn_risk.probability</div>
       </div>
     </div>
 
-<pre class="code"><span class="c"># Four questions, one forward pass, one result object.</span>
-result = agent.predict(email, {
-  department: { type: <span class="k">:choice</span>, instructions: <span class="s">"Which department should handle this?"</span>,
-                criteria: { billing: <span class="s">"invoices, payments, refunds"</span>,
-                            technical: <span class="s">"bugs, outages, system errors"</span>,
-                            other: <span class="s">"everything else"</span> } },
-  urgency:    { type: <span class="k">:score</span>, instructions: <span class="s">"How urgent is this?"</span>,
-                criteria: [<span class="s">"not urgent"</span>, <span class="s">"soon"</span>, <span class="s">"critical deadline"</span>] },
-  churn_risk: { type: <span class="k">:noul</span>,  instructions: <span class="s">"Does the user threaten to cancel?"</span> }
-})
+<pre class="code"><span class="c"># Declare the questions once. They are code, so they diff and they test.</span>
+<span class="k">class</span> TicketTriage &lt; <span class="k">Laya::Decision</span>
+  choice <span class="k">:department</span>, <span class="s">"Which team should handle this?"</span>,
+         billing:   <span class="s">"invoices, payments, refunds"</span>,
+         technical: <span class="s">"bugs, outages, system errors"</span>,
+         other:     <span class="s">"everything else"</span>
 
-<span class="c"># Gate on confidence, because the probabilities are trained to mean something.</span>
-<span class="k">if</span> result[<span class="k">:department</span>].confidence &gt;= 0.85
-  route_to result[<span class="k">:department</span>].choice
-<span class="k">else</span>
-  escalate_to_human result
+  score  <span class="k">:urgency</span>, <span class="s">"How urgent is this?"</span>,
+         levels: [<span class="s">"not urgent"</span>, <span class="s">"soon"</span>, <span class="s">"critical deadline"</span>]
+
+  noul   <span class="k">:churn_risk</span>, <span class="s">"Does the customer threaten to cancel?"</span>
 <span class="k">end</span>
 
-result.to_h <span class="c"># the payload upstream's Python returns, ready for JSON</span></pre>
+<span class="c"># One forward pass answers all three.</span>
+triage = TicketTriage.decide(email)
+
+triage.department              <span class="c"># =&gt; #&lt;Choice billing 95.9%&gt;</span>
+triage.department == <span class="k">:billing</span>   <span class="c"># =&gt; true</span>
+triage.department.billing?     <span class="c"># =&gt; true</span>
+triage.urgency.score           <span class="c"># =&gt; 1.36</span>
+triage.urgency.label           <span class="c"># =&gt; "soon"</span>
+triage.churn_risk?             <span class="c"># =&gt; true</span>
+triage.churn_risk.probability  <span class="c"># =&gt; 0.827</span>
+
+<span class="c"># Gate on confidence, because the probabilities are trained to mean something.</span>
+<span class="k">if</span> triage.department.confidence &gt;= 0.85
+  route_to triage.department.to_sym
+<span class="k">else</span>
+  escalate_to_human triage
+<span class="k">end</span></pre>
+
+<pre class="code"><span class="c"># Not worth a class? Ask inline.</span>
+<span class="k">Laya</span>.ask(email)
+    .noul(<span class="k">:refund</span>, <span class="s">"Do they want money back?"</span>)
+    .choice(<span class="k">:tone</span>, <span class="s">"How does this read?"</span>, %w[calm annoyed furious])
+    .decide
+    .refund
+    .probability                <span class="c"># =&gt; 0.856</span></pre>
   </section>
 
   <section id="routing">
@@ -357,17 +376,23 @@ result.to_h <span class="c"># the payload upstream's Python returns, ready for J
           is not serialized behind it. Tell it the language when you already know.
         </p>
       </div>
-<pre class="code">router = <span class="k">Laya::Router</span>.new(preload: <span class="k">true</span>)
+<pre class="code"><span class="k">Laya</span>.configure <span class="k">do</span> |config|
+  config.preload = <span class="k">true</span>      <span class="c"># every checkpoint resident</span>
+  config.device  = <span class="s">"coreml"</span>  <span class="c"># or "cpu", "cuda", ...</span>
+<span class="k">end</span>
 
-router.predict(hindi_ticket, questions).routing.model
-<span class="c"># =&gt; "multilingual"</span>
+triage = TicketTriage.decide(hindi_ticket)
 
-router.predict(hindi_ticket, questions).routing.reason
+triage.routing.model    <span class="c"># =&gt; "multilingual"</span>
+triage.routing.reason
 <span class="c"># =&gt; "non-Latin script (devanagari, 100% of letters);</span>
 <span class="c">#     the English checkpoint cannot read it"</span>
 
-router.predict(ticket, questions, lang: <span class="s">"pt-BR"</span>)
-router.predict(ticket, questions, model: <span class="s">"typed-decisions"</span>)</pre>
+<span class="c"># Or say so, when you already know.</span>
+TicketTriage.decide(ticket, lang: <span class="s">"pt-BR"</span>)
+<span class="k">class</span> InvoiceCheck &lt; <span class="k">Laya::Decision</span>
+  model <span class="s">"typed-decisions"</span>
+<span class="k">end</span></pre>
     </div>
   </section>
 
@@ -382,11 +407,11 @@ router.predict(ticket, questions, model: <span class="s">"typed-decisions"</span
 
     <div class="scroller">
       <table>
-        <caption>Accuracy, 2026-09-23 · ruby-laya 0.1.0 · Apple M5 Max, CPU only</caption>
+        <caption>Accuracy, 2026-09-23 · ruby-laya 0.1.0 · Apple M5 Max, CPU only · every bar on one scale, 0 to 100%</caption>
         <thead>
           <tr>
             <th scope="col">Model</th>
-            <th scope="col">AG News <span class="num">4</span></th>
+            <th scope="col">AG News <span class="num">4 labels</span></th>
             <th scope="col">Emotion <span class="num">6</span></th>
             <th scope="col">Banking77 <span class="num">77</span></th>
             <th scope="col">MASSIVE <span class="num">17, 12 langs</span></th>
@@ -395,38 +420,38 @@ router.predict(ticket, questions, model: <span class="s">"typed-decisions"</span
         <tbody>
           <tr class="laya">
             <th scope="row">ruby-laya, local</th>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:91.8%"></span></span><span class="lead">.918</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.4%"></span></span><span>.574</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:39%"></span></span><span>.390</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.5%"></span></span><span>.575</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:91.8%"></span></span><span class="lead">91.8%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.4%"></span></span><span>57.4%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:39%"></span></span><span>39.0%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.5%"></span></span><span>57.5%</span></span></td>
           </tr>
           <tr>
             <th scope="row">jev-1.13.0</th>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:86.6%"></span></span><span>.866</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.4%"></span></span><span>.574</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:80.8%"></span></span><span class="lead">.808</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:86.8%"></span></span><span class="lead">.868</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:86.6%"></span></span><span>86.6%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:57.4%"></span></span><span>57.4%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:80.8%"></span></span><span class="lead">80.8%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:86.8%"></span></span><span class="lead">86.8%</span></span></td>
           </tr>
           <tr>
             <th scope="row">qwen3-30b-a3b</th>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:85.6%"></span></span><span>.856</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:54.6%"></span></span><span>.546</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:72.4%"></span></span><span>.724</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:84.8%"></span></span><span>.848</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:85.6%"></span></span><span>85.6%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:54.6%"></span></span><span>54.6%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:72.4%"></span></span><span>72.4%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:84.8%"></span></span><span>84.8%</span></span></td>
           </tr>
           <tr>
             <th scope="row">gemini-3.1-flash-lite</th>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:82.6%"></span></span><span>.826</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:55%"></span></span><span>.550</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:78.4%"></span></span><span>.784</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:84.8%"></span></span><span>.848</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:82.6%"></span></span><span>82.6%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:55%"></span></span><span>55.0%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:78.4%"></span></span><span>78.4%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:84.8%"></span></span><span>84.8%</span></span></td>
           </tr>
           <tr>
             <th scope="row">gpt-5-nano</th>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:71%"></span></span><span>.710</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:56.6%"></span></span><span>.566</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:71%"></span></span><span>.710</span></span></td>
-            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:79.9%"></span></span><span>.799</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:71%"></span></span><span>71.0%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:56.6%"></span></span><span>56.6%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:71%"></span></span><span>71.0%</span></span></td>
+            <td class="n"><span class="scorebar"><span class="track"><span class="fill" style="width:79.9%"></span></span><span>79.9%</span></span></td>
           </tr>
         </tbody>
       </table>
@@ -445,9 +470,9 @@ router.predict(ticket, questions, model: <span class="s">"typed-decisions"</span
       <div>
         <div class="h">What it loses</div>
         <p>
-          With 77 labels it reaches .390 against Jev's .808, because the options share one token
-          budget. On multilingual intent it reaches .575 against .868. Raising the budget buys
-          .048 and telling the router the language buys .023, so both gaps belong to the
+          With 77 labels it reaches 39% against Jev's 81%, because the options share one token
+          budget. On multilingual intent it reaches 57% against 87%. Raising the budget buys
+          4.8 points and telling the router the language buys 2.3, so both gaps belong to the
           checkpoints. The <a href="https://github.com/codenamev/ruby-laya/blob/main/ROADMAP.md">roadmap</a>
           says what would move them.
         </p>

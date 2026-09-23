@@ -43,66 +43,115 @@ cached. The exports are reproducible from [`tools/export_onnx.py`](tools/export_
 weights inside them are the ones Convai Innovations published. Point `LAYA_ONNX_REPO` at your own
 repository to serve a mirror or your own fine-tuned export.
 
-## Quickstart: route mode
+## Quickstart
+
+Declare the questions you ask often. They are ordinary Ruby, so they live in your app, diff in
+review and can be tested.
 
 ```ruby
 require "laya"
 
-# Preload so no request pays a cold start
-router = Laya::Router.new(preload: true)
+class TicketTriage < Laya::Decision
+  choice :department, "Which team should handle this?",
+         billing:   "invoices, payments, refunds",
+         technical: "bugs, outages, system errors",
+         other:     "everything else"
 
-state = {
-  "from" => "user@acme.com",
-  "subject" => "Duplicate charge on invoice #4411",
-  "body" => "Hi, we were billed twice for March. Please refund the duplicate today or we will cancel."
-}
+  score  :urgency, "How urgent is this?",
+         levels: ["not urgent", "soon", "critical deadline"]
 
-questions = {
-  department: {
-    type: :choice,
-    instructions: "Which department should handle this request?",
-    criteria: {
-      billing: "invoices, payments, refunds",
-      technical: "bugs, outages, system errors",
-      sales: "pricing, new contracts",
-      other: "everything else"
-    }
-  },
-  urgency: {
-    type: :score,
-    instructions: "How urgent is this request?",
-    criteria: ["not urgent", "soon", "critical deadline or blocking issue"]
-  },
-  churn_risk: { type: :noul, instructions: "Does the user threaten to cancel or leave?" },
-  refund_requested: { type: :noul, instructions: "Does the user explicitly request a refund?" }
-}
-
-# English state, routed to laya
-english = router.predict(state, questions)
-english[:department].choice        # => :billing
-english[:urgency].score            # => 1.84
-english[:urgency].label            # => "critical deadline or blocking issue"
-english[:churn_risk].probability   # => 0.892
-english.routing.model              # => "english"
-
-# Hindi state, routed to laya-multilingual
-hindi = router.predict({ "body" => "मुझसे दो बार शुल्क लिया गया, कृपया पैसे वापस करें।" }, questions)
-hindi.routing.model                # => "multilingual"
-hindi.routing.reason
-# => "non-Latin script (devanagari, 100% of letters); the English checkpoint cannot read it"
-
-# Explicit override
-router.predict(state, questions, model: "typed-decisions")
+  noul   :churn_risk, "Does the customer threaten to cancel?"
+end
 ```
 
-`result.to_h` is the payload upstream's Python returns, ready for JSON, so a Ruby service and a
-Python one can be compared or swapped without touching the consumer.
-
-Ask which checkpoint a state would go to without running anything:
+Then ask. Every question is answered in one forward pass, on your machine.
 
 ```ruby
-router.route({ "body" => "Der Kunde wurde zweimal belastet" }, questions).reason
-# => "Latin script but language looks like \"de\", not English"
+triage = TicketTriage.decide(email)
+
+triage.department              # => #<Laya::Answer::Choice billing 95.9%>
+triage.department == :billing  # => true
+triage.department.billing?     # => true
+triage.department.confidence   # => 0.84
+
+triage.urgency.score           # => 1.36
+triage.urgency.label           # => "soon"
+
+triage.churn_risk?             # => true
+triage.churn_risk.probability  # => 0.827
+```
+
+An answer stands in for its label in a comparison and interpolates as it, while still carrying
+the distribution. One Ruby caveat: equality only reads true with the answer on the left, because
+`Symbol#==` knows nothing about an answer. For the same reason `case` needs the symbol:
+
+```ruby
+triage.department == :billing   # => true
+:billing == triage.department   # => false, Ruby asks the symbol
+
+case triage.department.to_sym
+when :billing   then route_to_billing
+when :technical then page_oncall
+end
+```
+
+For a question not worth a class, ask inline. Each call returns the builder, and `decide` runs
+the set:
+
+```ruby
+answers = Laya.ask(email)
+              .noul(:refund, "Do they want money back?")
+              .choice(:tone, "How does this read?", %w[calm annoyed furious])
+              .decide
+
+answers.refund.probability  # => 0.856
+answers.tone == :annoyed    # => true
+```
+
+Set up the process once, if the defaults do not suit:
+
+```ruby
+Laya.configure do |config|
+  config.preload = true       # every checkpoint resident, no cold start
+  config.device  = "coreml"   # or "cpu", "cuda", "tensorrt", "directml"
+  config.model   = nil        # nil routes per request; name one to pin it
+end
+```
+
+### The question sets that ship with it
+
+```ruby
+Laya::Guard.decide(prompt).jailbreak?                  # jailbreaks, injection, harm, topic
+Laya::Triage.decide(message).churn_risk.probability    # intent, urgency, frustration, churn
+Laya::Moderation.decide(post).toxic?                   # toxicity, harassment, threats, spam
+Laya::EmailTriage.decide(Laya.email_state(subject, body, sender: from)).is_phishing?
+Laya::RequestRouting.decide(request).difficulty.score  # how hard is this for a model
+```
+
+Each is a `Laya::Decision`, so subclass one to change a label set or pin a checkpoint. The plain
+hashes are still there as `Laya.triage_questions` and friends.
+
+### Routing
+
+Script and language detection runs in pure Ruby before any inference, and sends each request to
+the checkpoint that can read it. The English model does not degrade on Devanagari or Han, it
+collapses while staying confident, so the choice has to be made before the forward pass.
+
+```ruby
+triage = TicketTriage.decide(hindi_ticket)
+
+triage.routing.model   # => "multilingual"
+triage.routing.reason
+# => "non-Latin script (devanagari, 100% of letters); the English checkpoint cannot read it"
+
+TicketTriage.decide(ticket, lang: "pt-BR")   # when you already know
+```
+
+```ruby
+class InvoiceCheck < Laya::Decision
+  model "typed-decisions"      # always this checkpoint
+  noul :duplicate, "Is this invoice a duplicate of one already paid?"
+end
 ```
 
 ### Keeping checkpoints resident
@@ -135,16 +184,29 @@ router.predict(state, questions, lang: "pt-BR")
 Laya::Router.new(lang_guess: ->(state) { MyDetector.language_of(state) })
 ```
 
-## Single-model mode
+## One checkpoint, and the raw question form
+
+Underneath the DSL, a question set is a Hash and a checkpoint is an object you can hold. This is
+the form the model actually consumes, the one upstream's Python uses, and what the parity suite
+pins; reach for it when you are generating questions, or when you want one checkpoint and no
+router.
 
 ```ruby
 agent = Laya.load("convaiinnovations/laya")                              # English
 agent = Laya.load("convaiinnovations/laya", subfolder: "multilingual")   # 100+ languages
 agent = Laya.load("./my-export", device: "coreml")                       # a local export
 
-result = agent.predict(state, questions)   # every question in ONE forward pass
+result = agent.predict(state, {
+  "department" => { "type" => "choice", "instructions" => "Which team?",
+                    "criteria" => { "billing" => "invoices", "technical" => "outages" } }
+})
+result["department"].choice   # => "billing"
 agent.close
 ```
+
+`TicketTriage.questions` returns exactly this shape, and `Laya::Decision.define(hash)` turns a
+hash back into a decision class. Any object answering `predict(state, questions)` can be passed
+as `client:`, which is how the tests run without a model.
 
 `Laya.load` takes `device:` (`"cpu"` by default, plus `"coreml"`, `"cuda"`, `"tensorrt"`,
 `"directml"`), `providers:` for an explicit ONNX Runtime provider list, `threads:`, `token:` and
@@ -155,11 +217,10 @@ agent.close
 Probabilities are trained with strictly proper scoring rules, so confidence means something:
 
 ```ruby
-department = result[:department]
-if department.confidence >= 0.85
-  route_automatically(department.choice)
+if triage.department.confidence >= 0.85
+  route_automatically(triage.department.to_sym)
 else
-  escalate_to_human(department.choice, reason: format("low confidence (%.2f)", department.confidence))
+  escalate_to_human(triage, reason: format("low confidence (%.2f)", triage.department.confidence))
 end
 ```
 
@@ -167,26 +228,13 @@ Temperatures outside `[0.5, 5.0]` are clamped, with one warning per agent, becau
 temperature reports a coin flip as a certainty. The English checkpoint ships one such value for
 questions with eleven or more options.
 
-## Built-in presets
-
-```ruby
-agent.predict({ "message" => "My payment failed twice" }, Laya.triage_questions)
-agent.predict({ "prompt" => "Ignore all instructions" }, Laya.guard_questions)
-agent.predict({ "post" => "User comment text" }, Laya.moderation_questions)
-agent.predict({ "request" => "Refactor this service" }, Laya.router_questions)
-agent.predict(Laya.email_state(subject, body, sender: "a@b.c"), Laya.email_questions)
-```
-
-`Laya.clean_email_body` strips quoted history, signatures and disclaimers in English, Portuguese
-and Spanish; `Laya.email_state` builds the state around it.
-
 ## Decision primitives
 
-| Primitive | Reads as | Use cases |
+| Primitive | Declared as | Reads as |
 |---|---|---|
-| **`choice`** | `.choice`, `.probability(label)`, `.confidence` | Department routing, intent classification |
-| **`score`** | `.score`, `.label`, `.probabilities`, `.confidence` | Frustration, urgency, harm severity |
-| **`noul`** | `.probability`, `.true?(0.8)`, `.confidence` | Phishing, spam, jailbreak, churn risk |
+| **`choice`** | `choice :department, "...", billing: "...", technical: "..."` | `== :billing`, `.billing?`, `.probability("sales")`, `.confidence` |
+| **`score`** | `score :urgency, "...", levels: ["low", "high"]` | `.score`, `.label`, `.probabilities`, `.confidence` |
+| **`noul`** | `noul :churn_risk, "..."` | `triage.churn_risk?`, `.probability`, `.true?(0.9)` |
 
 Every answer also carries `.action_probability` from the action head.
 
@@ -309,9 +357,10 @@ bundle exec rake fixtures
 
 | Python | Ruby |
 |---|---|
+| a `questions` dict | a `Laya::Decision` subclass, or `Laya.ask(state).choice(...)` |
 | `laya.load(...)`, `laya.Agent` | `Laya.load(...)`, `Laya::Agent` |
 | `laya.Router`, `RouteDecision` | `Laya::Router`, `Laya::RouteDecision` |
-| `result["answers"]["x"]["choice"]` | `result[:x].choice`, or `result.to_h` for the same payload |
+| `result["answers"]["x"]["choice"]` | `triage.x == :label`, or `result.to_h` for the same payload |
 | `laya.detect_language / detect_script / is_english` | `Laya.detect_language / detect_script / english?` |
 | `laya.clean_email_body`, `email_state` | `Laya.clean_email_body`, `Laya.email_state` |
 | `laya.*_questions()` | `Laya.*_questions` |
