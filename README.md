@@ -260,6 +260,25 @@ which costs nothing extra but ranks Banking77's labels about as well as choosing
 pooled states are all within a few hundredths of each other in cosine. It is a starting point, not
 a retriever, and the shortlist is only as good as the embedder behind it.
 
+## Through ruby_decision_model
+
+[ruby_decision_model](https://github.com/obie/ruby_decision_model) is a
+provider-neutral client for decision models. A provider gem,
+[ruby_decision_model-providers-laya](https://github.com/codenamev/ruby_decision_model-providers-laya),
+makes this gem one of its providers, so an application can move between a hosted
+model and a local one without changing a call site:
+
+```ruby
+client = RubyDecisionModel::Client.new(provider: :laya)   # instead of :typesafe
+response = client.ask(state: ticket, questions: questions)
+response.usage.cost   # => nil, nothing was billed
+```
+
+Both that gem and the registration hook it needs are unreleased while the
+[upstream pull request](https://github.com/obie/ruby_decision_model/pull/21) is
+open; the provider gem's README shows how to point Bundler at checkouts in the
+meantime.
+
 ## Language and script detection
 
 ```ruby
