@@ -1,0 +1,153 @@
+{
+ "laya_version": "0.3.7",
+ "data": {
+  "questions": {
+   "choice_dict": {
+    "definition": {
+     "type": "choice",
+     "instructions": "Which team?",
+     "criteria": {
+      "billing": {
+       "desc": "payments"
+      },
+      "tech": null,
+      "sales": "",
+      "zero": 0,
+      "no": false
+     }
+    },
+    "internal_type": "choice",
+    "instructions": "Which team?",
+    "options": [
+     "billing: {\"desc\": \"payments\"}",
+     "tech",
+     "sales",
+     "zero: 0",
+     "no: false"
+    ]
+   },
+   "choice_list": {
+    "definition": {
+     "type": "choice",
+     "instructions": "Pick",
+     "criteria": [
+      "alpha",
+      "beta"
+     ]
+    },
+    "internal_type": "choice",
+    "instructions": "Pick",
+    "options": [
+     "alpha",
+     "beta"
+    ]
+   },
+   "score": {
+    "definition": {
+     "type": "score",
+     "instructions": "How urgent?",
+     "criteria": [
+      {
+       "d": "low"
+      },
+      "high",
+      2
+     ]
+    },
+    "internal_type": "score",
+    "instructions": "How urgent?",
+    "options": [
+     "level 0: {\"d\": \"low\"}",
+     "level 1: high",
+     "level 2: 2"
+    ]
+   },
+   "noul_bare": {
+    "definition": {
+     "type": "noul",
+     "instructions": "Is it?"
+    },
+    "internal_type": "noul",
+    "instructions": "Is it?",
+    "options": [
+     "false: no, the statement does not hold",
+     "true: yes, the statement holds"
+    ]
+   },
+   "noul_dict": {
+    "definition": {
+     "type": "noul",
+     "instructions": "Is this phishing?",
+     "criteria": {
+      "true": {
+       "desc": "phishing, scam or fraud"
+      },
+      "false": {
+       "desc": "legitimate"
+      }
+     }
+    },
+    "internal_type": "noul",
+    "instructions": "Is this phishing?",
+    "options": [
+     "false: {\"desc\": \"legitimate\"}",
+     "true: {\"desc\": \"phishing, scam or fraud\"}"
+    ]
+   },
+   "noul_bool_keys": {
+    "definition": {
+     "type": "noul",
+     "instructions": "Is it?",
+     "criteria": {
+      "True": "yes it is",
+      "False": "no"
+     }
+    },
+    "internal_type": "noul",
+    "instructions": "Is it?",
+    "options": [
+     "false: no",
+     "true: yes it is"
+    ]
+   },
+   "instructions_not_str": {
+    "definition": {
+     "type": "noul",
+     "instructions": {
+      "q": "é"
+     }
+    },
+    "internal_type": "noul",
+    "instructions": "{\"q\": \"\\u00e9\"}",
+    "options": [
+     "false: no, the statement does not hold",
+     "true: yes, the statement holds"
+    ]
+   }
+  },
+  "errors": {
+   "not_a_dict": "question 'not_a_dict': definition must be a dict, got str",
+   "no_type": "question 'no_type': unknown type None; use one of ['choice', 'noul', 'score']",
+   "unknown_type": "question 'unknown_type': unknown type 'essay'; use one of ['choice', 'noul', 'score']",
+   "no_instructions": "question 'no_instructions': no 'instructions'; add the text the model should answer",
+   "choice_no_criteria": "question 'choice_no_criteria': a choice question takes 'criteria' as a dict of label -> description, or a list of labels",
+   "choice_empty": "question 'choice_empty': a choice question needs at least one criterion",
+   "score_not_list": "question 'score_not_list': a score question takes 'criteria' as a list of level descriptions, index 0 first",
+   "score_empty": "question 'score_empty': a score question needs at least one level",
+   "noul_bad_criteria": "question 'noul_bad_criteria': a noul question takes 'criteria' as a dict with optional 'true'/'false' descriptions, or omits it"
+  },
+  "criteria": {
+   "str": "phishing or scam",
+   "dict": "{\"desc\": \"phishing\"}",
+   "list": "[\"a\", \"b\"]",
+   "int": "3",
+   "bool": "false",
+   "nonascii": "{\"d\": \"münchen\"}"
+  },
+  "serialize_state": {
+   "\"plain\"": "plain",
+   "{\"a\": 1, \"b\": [true, null, \"x\"]}": "{\"a\": 1, \"b\": [true, null, \"x\"]}",
+   "[\"x\", {\"y\": \"z\"}]": "[\"x\", {\"y\": \"z\"}]"
+  }
+ }
+}

@@ -4,44 +4,47 @@ require_relative "test_helper"
 
 class TokenizerTest < Minitest::Test
   def setup
-    skip_without_torch # tokenizers is a runtime dependency alongside torch-rb
-    @tok = Laya::Tokenizer.from_dir(File.join(LayaTest::CHECKPOINTS, "bert", "tokenizer"))
+    @tokenizer = Laya::Tokenizer.from_dir(File.join(LayaTest::TINY, "tokenizer"))
   end
 
-  def test_special_tokens_resolved_from_config
-    assert_equal "[MASK]", @tok.mask_token
-    assert_equal 4, @tok.mask_token_id
-    assert_equal 2, @tok.cls_token_id
-    assert_equal 3, @tok.sep_token_id
-    assert_equal 0, @tok.pad_token_id
+  def test_special_tokens_come_from_the_checkpoint
+    assert_equal "[MASK]", @tokenizer.mask_token
+    assert_equal 4, @tokenizer.mask_token_id
+    assert_equal 2, @tokenizer.cls_token_id
+    assert_equal 3, @tokenizer.sep_token_id
+    assert_equal 0, @tokenizer.pad_token_id
+    assert_operator @tokenizer.vocab_size, :>, 5
   end
 
-  def test_encode_ids_has_no_special_tokens
-    ids = @tok.encode_ids("hello world")
-    refute_includes ids, @tok.cls_token_id
+  def test_encoding_adds_no_special_tokens
+    ids = @tokenizer.encode_ids("hello world")
+
     assert_equal 2, ids.length
-    assert_equal %w[hello world], @tok.tokenize("hello world")
-    assert_equal "hello world", @tok.decode(ids)
-    assert_operator @tok.vocab_size, :>, 5
+    refute_includes ids, @tokenizer.cls_token_id
+    assert_equal %w[hello world], @tokenizer.tokenize("hello world")
+    assert_equal "hello world", @tokenizer.decode(ids)
   end
 
-  def test_encode_batch_pads_and_truncates
-    # the fixture tokenizer has no post-processor, so no [CLS]/[SEP] are added (as in Python)
-    enc = @tok.encode_batch(["hello world refund charged", "hi"], max_length: 3)
-    assert_equal [@tok.encode_ids("hello world refund"), [1, 0, 0]], enc["input_ids"]
-    assert_equal [[1, 1, 1], [1, 0, 0]], enc["attention_mask"]
-    # settings do not leak into later single encodes
-    assert_equal 3, @tok.encode_ids("hello world refund").length
+  def test_a_batch_is_padded_and_truncated
+    encoded = @tokenizer.encode_batch(["hello world refund charged", "hello"], max_length: 3)
+
+    assert_equal [3, 3], encoded["input_ids"].map(&:length)
+    assert_equal [[1, 1, 1], [1, 0, 0]], encoded["attention_mask"]
+    assert_equal @tokenizer.pad_token_id, encoded["input_ids"][1][1]
+    # padding settings must not leak into later single encodes
+    assert_equal 4, @tokenizer.encode_ids("hello world refund charged").length
   end
 
-  def test_missing_special_token_raises
-    inner = Tokenizers.from_file(File.join(LayaTest::CHECKPOINTS, "bert", "tokenizer", "tokenizer.json"))
-    if inner.token_to_id("[MASK]").nil?
-      err = assert_raises(Laya::IncompatibleModelError) do
-        Laya::Tokenizer.new(inner, mask_token: "<nope>")
-      end
-    end
-    assert err || true
-    assert_raises(Laya::ModelNotFoundError) { Laya::Tokenizer.from_dir("/nowhere") }
+  def test_a_missing_tokenizer_says_where_it_looked
+    error = assert_raises(Laya::ModelNotFoundError) { Laya::Tokenizer.from_dir("/nowhere") }
+    assert_includes error.message, "/nowhere"
+  end
+
+  def test_an_unusable_tokenizer_names_the_token_it_wanted
+    inner = Tokenizers.from_file(File.join(LayaTest::TINY, "tokenizer", "tokenizer.json"))
+    inner.define_singleton_method(:token_to_id) { |token| token.include?("MASK") || token.include?("mask") ? nil : 1 }
+    error = assert_raises(Laya::IncompatibleModelError) { Laya::Tokenizer.new(inner) }
+
+    assert_includes error.message, "mask"
   end
 end

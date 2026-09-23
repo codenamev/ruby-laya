@@ -1,0 +1,2465 @@
+{
+ "laya_version": "0.3.7",
+ "data": {
+  "routes": [
+   {
+    "router": "default",
+    "state": {
+     "body": "I was charged twice, please refund."
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "I was charged twice, please refund."
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "I was charged twice, please refund."
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "I was charged twice, please refund."
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (armenian, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "armenian",
+      "script_profile": {
+       "armenian": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (armenian, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "armenian",
+      "script_profile": {
+       "armenian": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "non-Latin script (armenian, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "armenian",
+      "script_profile": {
+       "armenian": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "non-Latin script (armenian, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "armenian",
+      "script_profile": {
+       "armenian": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "Հայերեն"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "मुझसे दो बार शुल्क लिया गया"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (devanagari, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "devanagari",
+      "script_profile": {
+       "devanagari": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "मुझसे दो बार शुल्क लिया गया"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (devanagari, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "devanagari",
+      "script_profile": {
+       "devanagari": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "मुझसे दो बार शुल्क लिया गया"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "non-Latin script (devanagari, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "devanagari",
+      "script_profile": {
+       "devanagari": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "मुझसे दो बार शुल्क लिया गया"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "non-Latin script (devanagari, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "devanagari",
+      "script_profile": {
+       "devanagari": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "二重に請求されました"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (kana, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "kana",
+      "script_profile": {
+       "han": 0.4,
+       "kana": 0.6
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "二重に請求されました"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (kana, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "kana",
+      "script_profile": {
+       "han": 0.4,
+       "kana": 0.6
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "二重に請求されました"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "non-Latin script (kana, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "kana",
+      "script_profile": {
+       "han": 0.4,
+       "kana": 0.6
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "二重に請求されました"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "non-Latin script (kana, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "kana",
+      "script_profile": {
+       "han": 0.4,
+       "kana": 0.6
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "두 번 청구되었습니다"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (hangul, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "hangul",
+      "script_profile": {
+       "hangul": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "두 번 청구되었습니다"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (hangul, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "hangul",
+      "script_profile": {
+       "hangul": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "두 번 청구되었습니다"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "non-Latin script (hangul, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "hangul",
+      "script_profile": {
+       "hangul": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "두 번 청구되었습니다"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "non-Latin script (hangul, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "hangul",
+      "script_profile": {
+       "hangul": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "تم خصم المبلغ مرتين"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (arabic, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "arabic",
+      "script_profile": {
+       "arabic": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "تم خصم المبلغ مرتين"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "non-Latin script (arabic, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "arabic",
+      "script_profile": {
+       "arabic": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "تم خصم المبلغ مرتين"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "non-Latin script (arabic, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "arabic",
+      "script_profile": {
+       "arabic": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "تم خصم المبلغ مرتين"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "non-Latin script (arabic, 100% of letters); the English checkpoint cannot read it",
+     "detection": {
+      "script": "arabic",
+      "script_profile": {
+       "arabic": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 1.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "Der Kunde wurde zweimal belastet und moechte eine Rueckerstattung fuer die Rechnung"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "Latin script but language looks like 'de', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "de",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "Der Kunde wurde zweimal belastet und moechte eine Rueckerstattung fuer die Rechnung"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "Latin script but language looks like 'de', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "de",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "Der Kunde wurde zweimal belastet und moechte eine Rueckerstattung fuer die Rechnung"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "Latin script but language looks like 'de', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "de",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "Der Kunde wurde zweimal belastet und moechte eine Rueckerstattung fuer die Rechnung"
+    },
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "Latin script but language looks like 'de', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "de",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "anything"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "multilingual"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "explicit model='multilingual'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "anything"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "multilingual"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "explicit model='multilingual'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "anything"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "multilingual"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "explicit model='multilingual'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "anything"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "multilingual"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "explicit model='multilingual'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "model": "english"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "explicit model='english'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed_decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya/typed-decisions",
+     "reason": "explicit task='typed_decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed_decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya/typed-decisions",
+     "reason": "explicit task='typed_decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed_decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya-typed-decisions",
+     "reason": "explicit task='typed_decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed_decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya/typed-decisions",
+     "reason": "explicit task='typed_decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed-decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya/typed-decisions",
+     "reason": "explicit task='typed-decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed-decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya/typed-decisions",
+     "reason": "explicit task='typed-decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed-decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya-typed-decisions",
+     "reason": "explicit task='typed-decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "x"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "task": "typed-decisions"
+    },
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya/typed-decisions",
+     "reason": "explicit task='typed-decisions'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit lang='en'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit lang='en'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit lang='en'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "explicit lang='en'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en_US.UTF-8"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit lang='en_US.UTF-8'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en_US.UTF-8"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit lang='en_US.UTF-8'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en_US.UTF-8"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "explicit lang='en_US.UTF-8'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "मुझसे दो बार"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "en_US.UTF-8"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "explicit lang='en_US.UTF-8'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "hello there"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "de"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "explicit lang='de'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "hello there"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "de"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "explicit lang='de'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "hello there"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "de"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "explicit lang='de'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "hello there"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": "de"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "explicit lang='de'",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": ""
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "explicit lang=''",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": ""
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "explicit lang=''",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": ""
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "explicit lang=''",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang": ""
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "explicit lang=''",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "I was charged twice"
+    },
+    "questions": "td",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": "customer_service"
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "I was charged twice"
+    },
+    "questions": "td",
+    "kwargs": {},
+    "decision": {
+     "model": "typed-decisions",
+     "repo": "convaiinnovations/laya/typed-decisions",
+     "reason": "question ids match the 'customer_service' typed-decisions workflow",
+     "detection": null,
+     "workflow": "customer_service"
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "I was charged twice"
+    },
+    "questions": "td",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": "customer_service"
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "I was charged twice"
+    },
+    "questions": "td",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": "customer_service"
+    }
+   },
+   {
+    "router": "default",
+    "state": {},
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {},
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {},
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {},
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": null,
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": null,
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": null,
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": null,
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": "12345",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": "12345",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": "12345",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": "12345",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "no letters detected in state; using default (english)",
+     "detection": {
+      "script": "unknown",
+      "script_profile": {},
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": "Quero cancelar",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": "Quero cancelar",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": "Quero cancelar",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": "Quero cancelar",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": "Esqueci minha senha",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": "Esqueci minha senha",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": "Esqueci minha senha",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": "Esqueci minha senha",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": "Gătește-mi o rețetă de sarmale de post pentru mâine.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "Latin script but language looks like 'ro', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "ro",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0962,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": "Gătește-mi o rețetă de sarmale de post pentru mâine.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "Latin script but language looks like 'ro', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "ro",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0962,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": "Gătește-mi o rețetă de sarmale de post pentru mâine.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "Latin script but language looks like 'ro', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "ro",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0962,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": "Gătește-mi o rețetă de sarmale de post pentru mâine.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "Latin script but language looks like 'ro', not English",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "ro",
+      "is_english": false,
+      "language_undecided": false,
+      "diacritic_rate": 0.0962,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": "Müşteriden iki kez ücret alındı ve para iadesi istiyor lütfen yardım",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "Latin script, language not identified but 10% non-English letters; not safe for the English checkpoint",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.1029,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": "Müşteriden iki kez ücret alındı ve para iadesi istiyor lütfen yardım",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "Latin script, language not identified but 10% non-English letters; not safe for the English checkpoint",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.1029,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": "Müşteriden iki kez ücret alındı ve para iadesi istiyor lütfen yardım",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "Latin script, language not identified but 10% non-English letters; not safe for the English checkpoint",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.1029,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": "Müşteriden iki kez ücret alındı ve para iadesi istiyor lütfen yardım",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "Latin script, language not identified but 10% non-English letters; not safe for the English checkpoint",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": false,
+      "language_undecided": true,
+      "diacritic_rate": 0.1029,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": "Please refund the duplicate charge on invoice 4411 today.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": "Please refund the duplicate charge on invoice 4411 today.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": "Please refund the duplicate charge on invoice 4411 today.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": "Please refund the duplicate charge on invoice 4411 today.",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "English Latin text",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": "en",
+      "is_english": true,
+      "language_undecided": false,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": "refund me",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": "refund me",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": "refund me",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": "refund me",
+    "questions": "generic",
+    "kwargs": {},
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+     "detection": {
+      "script": "latin",
+      "script_profile": {
+       "latin": 1.0
+      },
+      "language": null,
+      "is_english": true,
+      "language_undecided": true,
+      "diacritic_rate": 0.0,
+      "non_latin_fraction": 0.0
+     },
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "pt"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "pt"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "pt"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "pt"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "olá"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "lang_guess: the caller identified this as English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "olá"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "lang_guess: the caller identified this as English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "olá"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "convaiinnovations/laya",
+     "reason": "lang_guess: the caller identified this as English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "olá"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "en"
+    },
+    "decision": {
+     "model": "english",
+     "repo": "/tmp/en",
+     "reason": "lang_guess: the caller identified this as English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "default",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "zzz"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "auto",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "zzz"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya/multilingual",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "standalone",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "zzz"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "convaiinnovations/laya-multilingual",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   },
+   {
+    "router": "local",
+    "state": {
+     "body": "hello"
+    },
+    "questions": "generic",
+    "kwargs": {
+     "lang_guess": "zzz"
+    },
+    "decision": {
+     "model": "multilingual",
+     "repo": "/tmp/ml",
+     "reason": "lang_guess: the caller identified this as non-English text",
+     "detection": null,
+     "workflow": null
+    }
+   }
+  ],
+  "defaults": {
+   "max_loaded": 2,
+   "default": "english"
+  },
+  "workflows": {
+   "agent_trace_observability": "agent_trace_observability",
+   "customer_service": "customer_service",
+   "invoice_processing": "invoice_processing",
+   "security_incidents": "security_incidents",
+   "partial": null,
+   "superset": null,
+   "empty": null
+  },
+  "aliases": {
+   "en": "english",
+   "laya": "english",
+   "multi": "multilingual",
+   "ML": "multilingual",
+   "typed": "typed-decisions",
+   "typed_decisions": "typed-decisions",
+   "English": "english",
+   " laya ": "english",
+   "decisions": "typed-decisions"
+  },
+  "repo_str": {
+   "root": "convaiinnovations/laya",
+   "sub": "convaiinnovations/laya/multilingual",
+   "plain": "some/repo"
+  },
+  "custom_default": {
+   "model": "multilingual",
+   "repo": "convaiinnovations/laya/multilingual",
+   "reason": "no letters detected in state; using default (multilingual)",
+   "detection": {
+    "script": "unknown",
+    "script_profile": {},
+    "language": null,
+    "is_english": true,
+    "language_undecided": true,
+    "diacritic_rate": 0.0,
+    "non_latin_fraction": 0.0
+   },
+   "workflow": null
+  }
+ }
+}

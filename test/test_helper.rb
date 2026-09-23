@@ -3,43 +3,79 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "laya"
 require "minitest/autorun"
+require "minitest/mock"
 require "json"
 
 module LayaTest
   FIXTURES = File.expand_path("fixtures", __dir__)
-  CHECKPOINTS = File.join(FIXTURES, "checkpoints")
+  TINY = File.join(FIXTURES, "tiny")
 
-  def self.torch_available?
-    return @torch_available if defined?(@torch_available)
+  module_function
 
-    @torch_available = begin
-      require "torch"
+  # A fixture recorded from upstream Python by tools/make_parity_fixtures.py.
+  def parity(name)
+    @parity ||= {}
+    @parity[name] ||= JSON.parse(File.read(File.join(FIXTURES, "parity", "#{name}.json")))["data"]
+  end
+
+  def tiny_expected
+    @tiny_expected ||= JSON.parse(File.read(File.join(TINY, "expected.json")))["data"]
+  end
+
+  def onnxruntime?
+    return @onnxruntime if defined?(@onnxruntime)
+
+    @onnxruntime = begin
+      require "onnxruntime"
       true
     rescue LoadError
       false
     end
   end
 
-  # Tokenizer stub for sequence-construction tests: whitespace tokens, ids by first appearance.
-  class WordTokenizer
-    attr_reader :mask_token, :mask_token_id, :cls_token_id, :sep_token_id, :pad_token_id
+  # Load the tiny checkpoint without its clamp warning on stderr.
+  def tiny_agent(**options)
+    quietly { Laya.load(TINY, **options) }
+  end
 
-    def initialize
-      @vocab = { "[PAD]" => 0, "[UNK]" => 1, "[CLS]" => 2, "[SEP]" => 3, "[MASK]" => 4 }
-      @mask_token = "[MASK]"
-      @mask_token_id = 4
-      @cls_token_id = 2
-      @sep_token_id = 3
-      @pad_token_id = 0
-    end
-
-    def encode_ids(text)
-      text.split.map { |w| @vocab[w] ||= @vocab.length }
-    end
+  def quietly
+    original = $stderr
+    $stderr = StringIO.new
+    yield
+  ensure
+    $stderr = original
   end
 end
 
-# Skip a test unless torch-rb is installed.
-def skip_without_torch
-  skip "torch-rb is not installed" unless LayaTest.torch_available?
+module Minitest
+  class Test
+    def skip_without_onnxruntime
+      skip "onnxruntime is not installed" unless LayaTest.onnxruntime?
+    end
+
+    # Compare a Ruby payload with the one upstream Python recorded. Keys may be Strings or
+    # Symbols on the Ruby side; `false` and nil are distinguished, which a `||` lookup would not.
+    def assert_payload(expected, actual, label = "payload")
+      case expected
+      when Hash
+        assert_kind_of Hash, actual, label
+        assert_equal expected.keys.sort, actual.keys.map(&:to_s).sort, "#{label}: keys"
+        expected.each { |key, value| assert_payload(value, Laya::Util.get(actual, key), "#{label}.#{key}") }
+      when Array
+        assert_kind_of Array, actual, label
+        assert_equal expected.length, actual.length, "#{label}: length"
+        expected.each_with_index { |value, i| assert_payload(value, actual[i], "#{label}[#{i}]") }
+      when Float
+        assert_in_delta expected, actual, 1e-9, label
+      else
+        assert_value expected, actual, label
+      end
+    end
+
+    # assert_equal, but `nil` is expected rather than a mistake.
+    def assert_value(expected, actual, label = nil)
+      actual = actual.to_s if actual.is_a?(Symbol) && !expected.is_a?(Symbol)
+      expected.nil? ? assert_nil(actual, label) : assert_equal(expected, actual, label)
+    end
+  end
 end

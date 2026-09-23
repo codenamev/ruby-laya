@@ -1,0 +1,21 @@
+{
+  "format": "onnx",
+  "exported_from": "checkpoint",
+  "laya_version": "0.3.7",
+  "torch_version": "2.14.0",
+  "onnx_opset": 20,
+  "hidden_size": 32,
+  "min_markers": 2,
+  "outputs": [
+    "logits",
+    "act_logits",
+    "last_hidden_state"
+  ],
+  "max_verified_diff": {
+    "logits": 3.2782554626464844e-07,
+    "act_logits": 1.049041748046875e-05,
+    "last_hidden_state": 7.748603820800781e-07,
+    "predict_payload": 0.0
+  },
+  "min_seq": 8
+}

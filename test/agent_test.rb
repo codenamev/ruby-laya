@@ -4,314 +4,221 @@ require_relative "test_helper"
 require "tmpdir"
 require "fileutils"
 
-# Real forward passes on the tiny random-weight checkpoints under test/fixtures/checkpoints,
-# checked against the outputs PyTorch + transformers produced for the same inputs
-# (see test/fixtures/make_fixtures.py).
+# End-to-end runs of the ONNX runtime against the tiny checkpoint in test/fixtures/tiny, whose
+# expected answers were recorded from upstream Python (tools/make_test_checkpoint.py).
 class AgentTest < Minitest::Test
   def setup
-    skip_without_torch
+    skip_without_onnxruntime
+    @expected = LayaTest.tiny_expected
   end
 
-  def fixture(kind)
-    File.join(LayaTest::CHECKPOINTS, kind)
+  def agent
+    @agent ||= LayaTest.tiny_agent
   end
 
-  def expected(kind)
-    JSON.parse(File.read(File.join(fixture(kind), "expected.json")))
+  def teardown
+    @agent&.close
   end
 
-  def load_quietly(*args, **kwargs)
-    old_stderr = $stderr
-    $stderr = StringIO.new
-    Laya.load(*args, **kwargs)
-  ensure
-    $stderr = old_stderr
-  end
-
-  def assert_close(exp, got, tol, label)
-    exp.flatten.zip(got.flatten).each_with_index do |(e, g), i|
-      assert_in_delta e, g, tol, "#{label}[#{i}]"
+  def test_every_recorded_case_matches_upstream
+    @expected["cases"].each do |kase|
+      result = agent.predict(kase["state"], kase["questions"])
+      assert_payload kase["predict"], result.to_h, kase["label"]
     end
   end
 
-  %w[modernbert bert].each do |kind|
-    define_method("test_#{kind}_sequences_match_python") do
-      exp = expected(kind)
-      agent = load_quietly(fixture(kind), device: "cpu")
-      exp["sequences"].each do |m|
-        q = Laya::Common.to_internal(exp["questions"][m["id"]])
-        ids, markers = Laya::Common.build_sequence(agent.tok, exp["state"], q, max_len: agent.cfg["max_len"],
-                                                                               head_max_len: agent.cfg["head_max_len"])
-        assert_equal m["ids"], ids, m["id"]
-        assert_equal m["markers"], markers, m["id"]
-      end
-    end
+  def test_answers_read_as_objects
+    result = agent.predict(@expected["cases"][0]["state"], @expected["cases"][0]["questions"])
+    recorded = @expected["cases"][0]["predict"]["answers"]
 
-    define_method("test_#{kind}_forward_matches_python") do
-      exp = expected(kind)
-      agent = load_quietly(fixture(kind), device: "cpu")
-      items = exp["sequences"].map do |m|
-        { ids: m["ids"], markers: m["markers"],
-          qtype: Laya::QTYPES[Laya::Common.to_internal(exp["questions"][m["id"]])[:t]] }
-      end
-      batch = agent.send(:collate, items)
-      logits, act = agent.send(:run, batch)
-      assert_close exp["logits"], logits.to_a, 1e-4, "logits"
-      assert_close exp["act_logits"], act.to_a, 1e-4, "act_logits"
-    end
+    department = result["department"]
+    assert_kind_of Laya::Answer::Choice, department
+    assert_equal recorded["department"]["choice"], department.choice
+    assert_in_delta recorded["department"]["confidence"], department.confidence, 1e-9
+    assert_in_delta recorded["department"]["probabilities"][department.choice], department.probability, 1e-9
+    assert_in_delta recorded["department"]["probabilities"]["technical"], department.probability("technical"), 1e-9
 
-    define_method("test_#{kind}_predict_matches_python") do
-      exp = expected(kind)
-      agent = load_quietly(fixture(kind), device: "cpu")
-      got = agent.predict(exp["state"], exp["questions"])
-      want = exp["predict"]
-      assert_equal want["model"], got["model"]
-      assert_equal want["usage"], got["usage"]
-      assert_equal want["answers"].keys, got["answers"].keys
-      want["answers"].each do |qid, wa|
-        ga = got["answers"][qid]
-        assert_equal wa.keys, ga.keys, qid
-        wa.each do |key, wv|
-          case wv
-          when Float then assert_in_delta wv, ga[key], 2e-4, "#{qid}.#{key}"
-          when Hash then wv.each do |k, v|
-            v.is_a?(Float) ? assert_in_delta(v, ga[key][k], 2e-4, "#{qid}.#{key}.#{k}") : assert_equal(v, ga[key][k])
-          end
-          else assert_equal wv, ga[key], "#{qid}.#{key}"
-          end
-        end
-      end
-    end
+    urgency = result["urgency"]
+    assert_kind_of Laya::Answer::Score, urgency
+    assert_in_delta recorded["urgency"]["score"], urgency.score, 1e-9
+    assert_includes urgency.legend.values, urgency.label
 
-    define_method("test_#{kind}_embed_fn_matches_python") do
-      exp = expected(kind)
-      agent = load_quietly(fixture(kind), device: "cpu")
-      enc = agent.tok.encode_batch(exp["embed_texts"], max_length: 40)
-      assert_equal exp["embed_input_ids"], enc["input_ids"]
-      assert_equal exp["embed_attention_mask"], enc["attention_mask"]
-      fn = Laya.embed_fn_from_agent(agent, max_length: 40, batch_size: 1)
-      assert_close exp["embed_pooled"], fn.call(exp["embed_texts"]), 1e-4, "pooled"
-      assert_equal [], fn.call([])
-      assert_equal 2, fn.call(["x", nil]).length
-    end
+    refund = result["refund"]
+    assert_kind_of Laya::Answer::Noul, refund
+    assert_in_delta recorded["refund"]["noul"], refund.probability, 1e-9
+    assert_equal refund.probability, refund.noul
+    assert_equal refund.probability > 0.5, refund.true?
+    assert_equal refund.probability > 0.9, refund.true?(0.9)
+
+    assert_equal %w[department urgency refund phish single many], result.answers.keys
+    assert_equal recorded["refund"]["action"]["act_probability"], refund.action_probability
+    assert_equal @expected["cases"][0]["predict"]["usage"]["input_tokens"], result.input_tokens
   end
 
-  def test_temperatures_are_clamped_with_a_warning
-    old_stderr = $stderr
-    $stderr = StringIO.new
-    agent = Laya.load(fixture("modernbert"), device: "cpu")
-    assert_includes $stderr.string, "choice:3-5=0.1006"
-    assert_equal [1.0, 1.2, 0.8], agent.temperature_raw
-    assert_equal [1.0, 1.2, 0.8], agent.temperature
-    assert_equal 0.1006, agent.temperature_by_options_raw["choice:3-5"]
-    assert_equal Laya::TEMP_MIN, agent.temperature_by_options["choice:3-5"]
-    assert_equal 1.5, agent.temperature_by_options["choice:2"]
-  ensure
-    $stderr = old_stderr
+  def test_question_ids_keep_the_type_they_were_given
+    result = agent.predict("refund me", { single: { type: :choice, instructions: "only one",
+                                                    criteria: ["yes"] } })
+    assert_equal [:single], result.answers.keys
+    assert_equal "yes", result[:single].choice
+    assert_equal ["single"], result.to_h["answers"].keys.map(&:to_s)
   end
 
-  def test_symbol_keys_and_result_shape
-    agent = load_quietly(fixture("bert"), device: "cpu")
-    res = agent.predict({ body: "hello world" },
-                        { dept: { type: :choice, instructions: "Which?", criteria: { billing: "money", tech: nil } },
-                          level: { type: :score, instructions: "How?", criteria: %w[lo hi] },
-                          yes: { type: :noul, instructions: "Is it?" } })
-    assert_equal %i[dept level yes], res["answers"].keys
-    assert_includes %i[billing tech], res["answers"][:dept]["choice"]
-    assert_equal %i[billing tech], res["answers"][:dept]["probabilities"].keys
-    assert_in_delta 1.0, res["answers"][:dept]["probabilities"].values.sum, 1e-3
-    assert_equal({ "0" => "lo", "1" => "hi" }, res["answers"][:level]["legend"])
-    assert_operator res["answers"][:level]["score"], :>=, 0.0
-    assert_operator res["answers"][:yes]["noul"], :<=, 1.0
-    assert_kind_of Float, res["answers"][:yes]["action"]["act_probability"]
-    assert_operator res["usage"]["input_tokens"], :>, 0
-    assert_equal 0, res["usage"]["output_tokens"]
-    assert_kind_of String, JSON.generate(res)
+  def test_missing_question_id_says_what_was_asked
+    result = agent.predict("refund me", { "single" => { "type" => "choice", "instructions" => "only one",
+                                                        "criteria" => ["yes"] } })
+    error = assert_raises(KeyError) { result["nope"] }
+    assert_includes error.message, "single"
   end
 
-  def test_single_option_choice_does_not_crash
-    agent = load_quietly(fixture("bert"), device: "cpu")
-    res = agent.predict("hello", { "q" => { "type" => "choice", "instructions" => "Only", "criteria" => ["yes"] } })
-    assert_equal "yes", res["answers"]["q"]["choice"]
-    assert_equal 1.0, res["answers"]["q"]["confidence"]
-    assert_equal({ "yes" => 1.0 }, res["answers"]["q"]["probabilities"])
+  def test_empty_questions_skip_inference
+    result = agent.predict("anything", {})
+    assert_empty result.answers
+    assert_equal({ "input_tokens" => 0, "output_tokens" => 0 }, result.usage)
   end
 
-  def test_too_many_options_raise
-    agent = load_quietly(fixture("bert"), device: "cpu")
-    many = (1..40).to_h { |i| ["option number #{i}", "a b c d e f"] }
-    err = assert_raises(ArgumentError) do
+  def test_questions_must_be_a_hash
+    assert_raises(ArgumentError) { agent.predict("x", [["q", { "type" => "noul" }]]) }
+  end
+
+  def test_options_that_cannot_fit_the_budget_are_reported
+    many = (1..40).to_h { |i| ["label number #{i}", "description of the label number #{i}"] }
+    error = assert_raises(ArgumentError) do
       agent.predict("hello", { "q" => { "type" => "choice", "instructions" => "x", "criteria" => many } })
     end
-    assert_includes err.message, "head_max_len"
-    assert_raises(ArgumentError) { agent.predict("hello", "not a hash") }
+    assert_includes error.message, "head_max_len"
+    assert_includes error.message, '"q"'
   end
 
-  def test_subfolder_and_local_path_handling
-    Dir.mktmpdir do |dir|
-      FileUtils.cp_r(fixture("bert"), File.join(dir, "variant"))
-      agent = load_quietly(dir, subfolder: "variant", device: "cpu")
-      assert_equal File.join(dir, "variant"), agent.model_dir
-      assert_raises(Laya::ModelNotFoundError) { load_quietly(dir, subfolder: "missing", device: "cpu") }
-      assert_raises(Laya::ModelNotFoundError) { load_quietly("/definitely/not/here", device: "cpu") }
-      assert_raises(Laya::ModelNotFoundError) { load_quietly("./nope-relative", device: "cpu") }
-      assert_raises(Laya::IncompatibleModelError) { load_quietly(dir, device: "cpu") } # no rl_agent_config.json
+  def test_embedding_matches_upstream
+    embed = @expected["embed"]
+    encoded = agent.tokenizer.encode_batch(embed["texts"], max_length: embed["max_length"])
+    assert_equal embed["input_ids"], encoded["input_ids"]
+    assert_equal embed["attention_mask"], encoded["attention_mask"]
+
+    pooled = agent.embed(embed["texts"], max_length: embed["max_length"])
+    assert_equal embed["pooled"].length, pooled.length
+    embed["pooled"].each_with_index do |row, i|
+      row.each_with_index { |value, j| assert_in_delta value, pooled[i][j], 1e-4, "row #{i} dim #{j}" }
     end
+    assert_empty agent.embed([])
+    assert_equal 2, agent.embed(["x", nil], max_length: 8, batch_size: 1).length
   end
 
-  def test_incompatible_checkpoints_are_rejected
-    Dir.mktmpdir do |dir|
-      root = File.join(dir, "m")
-      FileUtils.cp_r(fixture("bert"), root)
-      cfg = JSON.parse(File.read(File.join(root, "rl_agent_config.json")))
-      File.write(File.join(root, "rl_agent_config.json"), JSON.generate(cfg.merge("head_layers" => 3)))
-      err = assert_raises(Laya::IncompatibleModelError) { load_quietly(root, device: "cpu") }
-      assert_includes err.message, "missing"
+  def test_temperatures_are_clamped_and_reported_once
+    output = StringIO.new
+    original = $stderr
+    $stderr = output
+    loaded = Laya.load(LayaTest::TINY)
+    $stderr = original
+    recorded = @expected["temperatures"]
 
-      File.write(File.join(root, "rl_agent_config.json"), JSON.generate(cfg.except("head_layers")))
-      err = assert_raises(Laya::IncompatibleModelError) { load_quietly(root, device: "cpu") }
-      assert_includes err.message, "head_layers"
-
-      File.write(File.join(root, "rl_agent_config.json"), JSON.generate(cfg))
-      FileUtils.rm(File.join(root, "model.safetensors"))
-      assert_raises(Laya::IncompatibleModelError) { load_quietly(root, device: "cpu") }
-    end
-  end
-
-  def test_shape_mismatch_is_reported
-    Dir.mktmpdir do |dir|
-      root = File.join(dir, "m")
-      FileUtils.cp_r(fixture("bert"), root)
-      enc = JSON.parse(File.read(File.join(root, "encoder", "config.json")))
-      File.write(File.join(root, "encoder", "config.json"), JSON.generate(enc.merge("intermediate_size" => 96)))
-      err = assert_raises(Laya::IncompatibleModelError) { load_quietly(root, device: "cpu") }
-      assert_includes err.message, "architecture mismatch"
-    end
-  end
-
-  def test_unknown_encoder_type
-    Dir.mktmpdir do |dir|
-      root = File.join(dir, "m")
-      FileUtils.cp_r(fixture("bert"), root)
-      enc = JSON.parse(File.read(File.join(root, "encoder", "config.json")))
-      File.write(File.join(root, "encoder", "config.json"), JSON.generate(enc.merge("model_type" => "t5")))
-      err = assert_raises(Laya::IncompatibleModelError) { load_quietly(root, device: "cpu") }
-      assert_includes err.message, "t5"
-    end
-  end
-
-  def test_hub_download_is_filtered_to_the_runtime_files
-    exp = expected("bert")
-    Dir.mktmpdir do |dir|
-      repo = File.join(dir, "repo")
-      FileUtils.mkdir_p(repo)
-      runtime = Dir.glob("**/*", base: fixture("bert")).select { |f| File.file?(File.join(fixture("bert"), f)) }
-      runtime -= ["expected.json"]
-      (["."] + %w[multilingual typed-decisions variants/english]).each do |sub|
-        runtime.each do |f|
-          target = File.join(repo, sub, f)
-          FileUtils.mkdir_p(File.dirname(target))
-          FileUtils.cp(File.join(fixture("bert"), f), target)
-        end
-      end
-      File.write(File.join(repo, "README.md"), "An unrelated model card")
-      FileUtils.mkdir_p(File.join(repo, "eval"))
-      File.write(File.join(repo, "eval", "results.json"), "{}")
-      all_files = Dir.glob("**/*", base: repo).select { |f| File.file?(File.join(repo, f)) }
-
-      calls = []
-      stub_list = lambda { |repo_id, **_|
-        calls << repo_id
-        all_files
-      }
-      downloaded = []
-      stub_download = lambda { |_repo_id, path, local, **_|
-        downloaded << path
-        FileUtils.mkdir_p(File.dirname(local))
-        FileUtils.cp(File.join(repo, path), local)
-      }
-      Laya::Hub.stub(:list_files, stub_list) do
-        Laya::Hub.stub(:download_file, stub_download) do
-          Laya::Hub.stub(:cache_dir, File.join(dir, "cache")) do
-            [[nil, "convaiinnovations/laya"], ["multilingual", "test/bundled"],
-             ["variants/english", "test/bundled"]].each do |sub, id|
-              downloaded.clear
-              agent = load_quietly(id, subfolder: sub, device: "cpu", token: "test-token")
-              prefix = sub ? "#{sub}/" : ""
-              assert_equal runtime.map { |f| prefix + f }.sort, downloaded.sort, "subfolder=#{sub.inspect}"
-              got = agent.predict(exp["state"], exp["questions"])
-              assert_equal exp["predict"]["answers"]["department"]["choice"], got["answers"]["department"]["choice"]
-              # a second load hits the cache and downloads nothing
-              downloaded.clear
-              load_quietly(id, subfolder: sub, device: "cpu")
-              assert_empty downloaded
-            end
-          end
-        end
-      end
-      assert_equal 6, calls.length
-    end
-  end
-
-  def test_local_paths_never_download
-    called = false
-    Laya::Hub.stub(:snapshot_download, ->(*) { called = true }) do
-      load_quietly(fixture("bert"), device: "cpu")
-    end
-    refute called
-  end
-
-  def test_device_fallbacks
-    old_stderr = $stderr
-    $stderr = StringIO.new
-    unless Laya::Agent.cuda_available?
-      assert_equal "cpu", Laya::Agent.resolve_device("cuda").type
-      assert_includes $stderr.string, "CUDA requested"
-    end
-    assert_equal "cpu", Laya::Agent.resolve_device("cpu").type
-    assert_equal "cpu", Laya::Agent.resolve_device(:cpu).type
-    assert_equal :float32, Laya::Agent.default_dtype(Torch.device("cpu"), "bf16")
-    assert_equal :bfloat16, Laya::Agent.default_dtype(Torch.device("cuda"), "bf16")
-    assert_equal :float16, Laya::Agent.default_dtype(Torch.device("cuda"), nil)
+    assert_equal recorded["raw"], loaded.temperature_raw
+    assert_equal recorded["applied"], loaded.temperature
+    assert_equal recorded["by_options"], loaded.temperature_by_options
+    assert_includes output.string, "choice:11+"
+    assert_includes output.string, "uncalibrated"
+    assert_equal 1, output.string.lines.grep(/uncalibrated/).length
+    loaded.close
   ensure
-    $stderr = old_stderr
+    $stderr = original
   end
 
-  def test_router_end_to_end_with_local_checkpoints
-    exp = expected("modernbert")
-    models = { "english" => fixture("bert"), "multilingual" => fixture("modernbert"),
-               "typed-decisions" => [File.dirname(fixture("modernbert")), "modernbert"] }
-    router = Laya::Router.new(models: models, device: "cpu", max_loaded: 1)
-    old_stderr = $stderr
-    $stderr = StringIO.new
-    res_en = router.predict({ "message" => "I was charged twice, please refund." }, exp["questions"])
-    assert_equal "english", res_en["routing"]["model"]
-    assert_includes res_en["answers"], "department"
-    res_hi = router.predict({ "message" => "मुझसे दो बार शुल्क लिया गया, कृपया पैसे वापस करें।" }, exp["questions"])
-    assert_equal "multilingual", res_hi["routing"]["model"]
-    assert_equal ["multilingual"], router.loaded
-    res_td = router.predict({ "message" => "anything" }, exp["questions"], model: "typed-decisions")
-    assert_equal "typed-decisions", res_td["routing"]["model"]
-    assert_kind_of String, JSON.generate(res_td["routing"])
-  ensure
-    $stderr = old_stderr
+  def test_block_form_closes_the_agent
+    closed = Laya.load(LayaTest::TINY) do |open_agent|
+      refute_predicate open_agent, :closed?
+      open_agent
+    end
+    assert_predicate closed, :closed?
+    assert_raises(Laya::Error) { closed.predict("x", { "q" => { "type" => "noul", "instructions" => "y" } }) }
   end
 
-  def test_shortlist_with_a_real_agent
-    agent = load_quietly(fixture("bert"), device: "cpu")
-    many = (1..8).to_h { |i| ["label#{i}", "hello world #{i}"] }
-    out = Laya.predict_shortlist(agent, "hello world", { "q" => { "type" => "choice", "instructions" => "x", "criteria" => many } }, # rubocop:disable Layout/LineLength
-                                 Laya.embed_fn_from_agent(agent), k: 3)
-    assert_equal 3, out["shortlist"]["q"]["labels"].length
-    assert_equal 3, out["answers"]["q"]["probabilities"].length
-    assert_includes out["shortlist"]["q"]["labels"], out["answers"]["q"]["choice"]
+  def test_devices_and_providers
+    assert_equal ["CPUExecutionProvider"], Laya::Runtime.providers_for
+    assert_equal %w[CoreMLExecutionProvider CPUExecutionProvider], Laya::Runtime.providers_for(device: "coreml")
+    assert_equal %w[CUDAExecutionProvider CPUExecutionProvider], Laya::Runtime.providers_for(device: :cuda)
+    assert_equal ["Custom"], Laya::Runtime.providers_for(device: "cuda", providers: ["Custom"])
+    assert_raises(ArgumentError) { Laya::Runtime.providers_for(device: "quantum") }
+    assert_includes agent.runtime.providers, "CPUExecutionProvider"
+    assert_match(/Laya::Agent .*providers=/, agent.inspect)
   end
 
-  def test_load_aliases
-    agent = load_quietly(fixture("bert"), device: "cpu")
+  def test_a_directory_without_an_export_says_so
+    Dir.mktmpdir do |dir|
+      error = assert_raises(Laya::IncompatibleModelError) { Laya.load(dir) }
+      assert_includes error.message, "rl_agent_config.json"
+
+      FileUtils.cp(File.join(LayaTest::TINY, "rl_agent_config.json"), dir)
+      FileUtils.cp(File.join(LayaTest::TINY, "onnx_config.json"), dir)
+      FileUtils.cp_r(File.join(LayaTest::TINY, "tokenizer"), dir)
+      error = assert_raises(Laya::IncompatibleModelError) { Laya.load(dir) }
+      assert_includes error.message, "model.onnx"
+      assert_includes error.message, "export_onnx.py"
+    end
+  end
+
+  def test_missing_paths_and_subfolders
+    assert_raises(Laya::ModelNotFoundError) { Laya.load("/definitely/not/here") }
+    assert_raises(Laya::ModelNotFoundError) { Laya.load("./nope-relative") }
+    assert_raises(Laya::ModelNotFoundError) { Laya.load(LayaTest::FIXTURES, subfolder: "missing") }
+  end
+
+  def test_a_subfolder_of_a_local_directory_loads
+    loaded = LayaTest.quietly { Laya.load(LayaTest::FIXTURES, subfolder: "tiny") }
+    assert_equal LayaTest::TINY, loaded.model_dir
+    loaded.close
+  end
+
+  def test_upstream_ids_resolve_to_the_onnx_exports
+    assert_equal [Laya::Checkpoints.onnx_repo, "english"],
+                 Laya::Agent.onnx_source_for("convaiinnovations/laya", nil)
+    assert_equal [Laya::Checkpoints.onnx_repo, "multilingual"],
+                 Laya::Agent.onnx_source_for("convaiinnovations/laya", "multilingual")
+    assert_equal [Laya::Checkpoints.onnx_repo, "multilingual"],
+                 Laya::Agent.onnx_source_for("convaiinnovations/laya-multilingual", nil)
+    assert_equal [Laya::Checkpoints.onnx_repo, "typed-decisions"],
+                 Laya::Agent.onnx_source_for("convaiinnovations/laya-typed-decisions", nil)
+    # anything else is taken to name an export already
+    assert_equal ["someone/my-laya-export", "v2"], Laya::Agent.onnx_source_for("someone/my-laya-export", "v2")
+  end
+
+  # A downloader that records what was asked of it and serves the tiny export.
+  class FakeHub
+    attr_reader :calls
+
+    def initialize(directory)
+      @directory = directory
+      @calls = []
+    end
+
+    def snapshot(repo, subfolder: nil, allow_patterns: nil, token: nil, revision: nil)
+      @calls << { repo: repo, subfolder: subfolder, allow_patterns: allow_patterns,
+                  token: token, revision: revision }
+      @directory
+    end
+  end
+
+  def test_an_upstream_id_is_fetched_through_the_hub
+    hub = FakeHub.new(LayaTest::TINY)
+    loaded = LayaTest.quietly { Laya.load("convaiinnovations/laya", subfolder: "multilingual", hub: hub, token: "t") }
+    call = hub.calls.fetch(0)
+
+    assert_equal Laya::Checkpoints.onnx_repo, call[:repo]
+    assert_equal "multilingual", call[:subfolder]
+    assert_equal Laya::Agent::RUNTIME_FILES, call[:allow_patterns]
+    assert_equal "t", call[:token]
+    assert_equal "main", call[:revision]
+    assert_equal "refund me", loaded.tokenizer.decode(loaded.tokenizer.encode_ids("refund me"))
+    loaded.close
+  end
+
+  def test_a_local_directory_is_never_downloaded
+    hub = FakeHub.new(LayaTest::TINY)
+    LayaTest.quietly { Laya.load(LayaTest::TINY, hub: hub) }.close
+    assert_empty hub.calls
+  end
+
+  def test_aliases
     assert_equal Laya::Agent, Laya::RLAgent
-    assert_kind_of Laya::Agent, Laya::Agent.load(fixture("bert"), device: "cpu")
-    assert_match(/Laya::Agent .*device=cpu dtype=float32/, agent.inspect)
-    assert_equal agent.method(:system_one).owner, agent.method(:predict).owner
+    assert_equal agent.method(:predict).owner, agent.method(:system_one).owner
   end
 end

@@ -1,0 +1,316 @@
+{
+ "laya_version": "0.3.7",
+ "data": {
+  "confidence": [
+   {
+    "p": [
+     1.0
+    ],
+    "k": 1,
+    "confidence": 1.0
+   },
+   {
+    "p": [
+     0.5,
+     0.5
+    ],
+    "k": 2,
+    "confidence": 0.0
+   },
+   {
+    "p": [
+     1.0,
+     0.0
+    ],
+    "k": 2,
+    "confidence": 1.0
+   },
+   {
+    "p": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "k": 3,
+    "confidence": 0.27015330083790257
+   },
+   {
+    "p": [
+     0.4,
+     0.3,
+     0.3
+    ],
+    "k": 3,
+    "confidence": 0.00884052856778128
+   },
+   {
+    "p": [
+     0.25,
+     0.25,
+     0.25,
+     0.25
+    ],
+    "k": 4,
+    "confidence": 0.0
+   },
+   {
+    "p": [
+     1.0,
+     0.0,
+     0.7
+    ],
+    "k": 2,
+    "confidence": 1.0
+   }
+  ],
+  "ece": [
+   {
+    "conf": [
+     0.9,
+     0.9
+    ],
+    "correct": [
+     1,
+     0
+    ],
+    "bins": 15,
+    "ece": 0.4
+   },
+   {
+    "conf": [
+     0.0,
+     1.0
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "bins": 15,
+    "ece": 0.0
+   },
+   {
+    "conf": [
+     0.1,
+     0.2,
+     0.9
+    ],
+    "correct": [
+     0,
+     1,
+     1
+    ],
+    "bins": 10,
+    "ece": 0.3333333333333333
+   },
+   {
+    "conf": [],
+    "correct": [],
+    "bins": 15,
+    "ece": null
+   },
+   {
+    "conf": [
+     0.0666,
+     0.0667
+    ],
+    "correct": [
+     1,
+     0
+    ],
+    "bins": 15,
+    "ece": 0.50005
+   }
+  ],
+  "buckets": [
+   {
+    "qtype": "choice",
+    "k": 1,
+    "bucket": "choice:2"
+   },
+   {
+    "qtype": "choice",
+    "k": 2,
+    "bucket": "choice:2"
+   },
+   {
+    "qtype": "choice",
+    "k": 3,
+    "bucket": "choice:3-5"
+   },
+   {
+    "qtype": "choice",
+    "k": 5,
+    "bucket": "choice:3-5"
+   },
+   {
+    "qtype": "choice",
+    "k": 6,
+    "bucket": "choice:6-10"
+   },
+   {
+    "qtype": "choice",
+    "k": 10,
+    "bucket": "choice:6-10"
+   },
+   {
+    "qtype": "choice",
+    "k": 11,
+    "bucket": "choice:11+"
+   },
+   {
+    "qtype": "choice",
+    "k": 13,
+    "bucket": "choice:11+"
+   },
+   {
+    "qtype": "choice",
+    "k": 77,
+    "bucket": "choice:11+"
+   },
+   {
+    "qtype": "score",
+    "k": 1,
+    "bucket": "score:2"
+   },
+   {
+    "qtype": "score",
+    "k": 2,
+    "bucket": "score:2"
+   },
+   {
+    "qtype": "score",
+    "k": 3,
+    "bucket": "score:3-5"
+   },
+   {
+    "qtype": "score",
+    "k": 5,
+    "bucket": "score:3-5"
+   },
+   {
+    "qtype": "score",
+    "k": 6,
+    "bucket": "score:6-10"
+   },
+   {
+    "qtype": "score",
+    "k": 10,
+    "bucket": "score:6-10"
+   },
+   {
+    "qtype": "score",
+    "k": 11,
+    "bucket": "score:11+"
+   },
+   {
+    "qtype": "score",
+    "k": 13,
+    "bucket": "score:11+"
+   },
+   {
+    "qtype": "score",
+    "k": 77,
+    "bucket": "score:11+"
+   },
+   {
+    "qtype": "noul",
+    "k": 1,
+    "bucket": "noul:2"
+   },
+   {
+    "qtype": "noul",
+    "k": 2,
+    "bucket": "noul:2"
+   },
+   {
+    "qtype": "noul",
+    "k": 3,
+    "bucket": "noul:3-5"
+   },
+   {
+    "qtype": "noul",
+    "k": 5,
+    "bucket": "noul:3-5"
+   },
+   {
+    "qtype": "noul",
+    "k": 6,
+    "bucket": "noul:6-10"
+   },
+   {
+    "qtype": "noul",
+    "k": 10,
+    "bucket": "noul:6-10"
+   },
+   {
+    "qtype": "noul",
+    "k": 11,
+    "bucket": "noul:11+"
+   },
+   {
+    "qtype": "noul",
+    "k": 13,
+    "bucket": "noul:11+"
+   },
+   {
+    "qtype": "noul",
+    "k": 77,
+    "bucket": "noul:11+"
+   }
+  ],
+  "clamps": [
+   {
+    "input": "0.1006",
+    "clamped": 0.5
+   },
+   {
+    "input": "0.10058280825614929",
+    "clamped": 0.5
+   },
+   {
+    "input": "1.7601518630981445",
+    "clamped": 1.7601518630981445
+   },
+   {
+    "input": "1.0",
+    "clamped": 1.0
+   },
+   {
+    "input": "9.0",
+    "clamped": 5.0
+   },
+   {
+    "input": "0.0",
+    "clamped": 0.5
+   },
+   {
+    "input": "-3.0",
+    "clamped": 0.5
+   },
+   {
+    "input": "None",
+    "clamped": 1.0
+   },
+   {
+    "input": "'x'",
+    "clamped": 1.0
+   },
+   {
+    "input": "nan",
+    "clamped": 1.0
+   },
+   {
+    "input": "inf",
+    "clamped": 1.0
+   },
+   {
+    "input": "'1.5'",
+    "clamped": 1.5
+   },
+   {
+    "input": "True",
+    "clamped": 1.0
+   }
+  ]
+ }
+}

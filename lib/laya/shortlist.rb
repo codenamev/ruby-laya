@@ -1,120 +1,115 @@
 # frozen_string_literal: true
 
 module Laya
-  # Opt-in embedding shortlist for high-cardinality choice questions.
+  # An opt-in embedding shortlist for choice questions with many labels.
   #
-  # Choice options share one `head_max_len` budget, so a large label set leaves only a few
-  # tokens per label. {predict_shortlist} embeds the state and each option with a
-  # caller-supplied `embed_fn`, keeps the top `k`, and runs a single `predict` (or
-  # `system_one`) on that reduced criteria set.
-  #
-  # `Agent#predict` and `Agent#system_one` are separate: they still score every criterion
-  # they are given. This module does not change the decision model's forward pass.
+  # Options share one `head_max_len` budget, so a large label set leaves only a few tokens per
+  # label and they stop being distinguishable. {predict_shortlist} embeds the state and each
+  # option with a caller-supplied `embed_fn`, keeps the top `k`, and runs one prediction on that
+  # reduced set. `predict` itself is untouched: it still scores every criterion it is given.
   module Shortlist
     DEFAULT_SHORTLIST_K = 20
 
     module_function
 
-    # Return the top-`k` choice labels for `state`.
+    # The top `k` labels for `state`.
     #
-    # `embed_fn` maps an Array of Strings to a matrix of shape `(texts.length, dim)`: an Array
-    # of Arrays, a Torch::Tensor or anything responding to `to_a` the same way. It is called
-    # once, with the query text first and then one string per option in criteria order. Option
-    # strings match {Common.render_options} for a choice question.
-    #
-    # When `k` is at least the number of labels, every label is returned in its original order
-    # and `embed_fn` is not called.
-    #
-    # Ties keep the earlier label. A zero vector scores 0 and does not outrank a label that
-    # came before it.
+    # `embed_fn` maps an Array of Strings to one vector per string. It is called once, with the
+    # query first and then the options in criteria order, rendered as the model would see them.
+    # When `k` is at least the number of labels every label is returned in its original order and
+    # `embed_fn` is never called. Ties keep the earlier label, and a zero vector never outranks
+    # a label that came before it.
     def shortlist_choice(state, criteria, embed_fn, k: DEFAULT_SHORTLIST_K, instructions: nil)
-      labels, = rank(state, criteria, embed_fn, k, instructions)
-      labels
+      rank(state, criteria, embed_fn, k, instructions).labels
     end
 
-    # Shortlist each choice question, then call `predict` or `system_one` once.
+    # Shortlist every choice question, then predict once.
     #
-    # Non-choice questions are forwarded unchanged. A choice whose label count is `<= k` is
-    # forwarded unchanged and does not call `embed_fn`. The caller's `questions` hash is not
-    # mutated.
-    #
-    # The returned hash is the model result plus a "shortlist" entry. Probabilities on a
-    # shortlisted choice are over the kept labels only. `shortlist[qid]` holds "labels" (rank
-    # order), "scores" (cosine, or nil when nothing was dropped), "k", "n" and "passthrough".
-    #
-    # Extra keyword arguments are forwarded to `predict` / `system_one` (for example `model:`
-    # on a {Router}).
-    def predict_shortlist(agent, state, questions, embed_fn, k: DEFAULT_SHORTLIST_K, **predict_kwargs)
-      raise TypeError, "questions must be a Hash of question id -> definition" unless questions.is_a?(Hash)
+    # Questions that are not choices, and choices with `k` labels or fewer, are passed through
+    # untouched. The caller's Hash is never mutated. The result carries a `shortlist` entry
+    # recording, per question, the labels kept in rank order, their cosine scores, `k`, the
+    # original label count `n`, and whether it was a pass-through.
+    def predict_shortlist(agent, state, questions, embed_fn, k: DEFAULT_SHORTLIST_K, **predict_options)
+      raise TypeError, "questions must be a Hash of question id => definition" unless questions.is_a?(Hash)
 
       checked = Util.positive_int!(k, "k")
       reduced = {}
       meta = {}
-      questions.each do |qid, qdef|
-        unless qdef.is_a?(Hash) && Util.get(qdef, "type").to_s == "choice"
-          reduced[qid] = qdef
+      questions.each do |id, definition|
+        unless choice?(definition)
+          reduced[id] = definition
           next
         end
-        raise ArgumentError, "question #{qid.inspect} is a choice but has no criteria" unless Util.key?(qdef,
-                                                                                                        "criteria")
 
-        criteria = Util.get(qdef, "criteria")
-        labels, scores, passthrough, n = rank(state, criteria, embed_fn, checked, Util.get(qdef, "instructions"))
-        meta[qid] = { "labels" => labels.dup, "scores" => scores, "k" => checked, "n" => n,
-                      "passthrough" => passthrough }
-        if passthrough
-          reduced[qid] = qdef
-          next
-        end
-        updated = qdef.dup
-        Util.put(updated, "criteria", subset_criteria(criteria, labels))
-        reduced[qid] = updated
+        ranking = rank_question(id, definition, state, embed_fn, checked)
+        meta[id] = ranking.to_h
+        reduced[id] = ranking.passthrough ? definition : narrow(definition, ranking.labels)
       end
 
-      result = call_predict(agent, state, reduced, **predict_kwargs)
-      raise TypeError, "predict/system_one must return a Hash, got #{result.class}" unless result.is_a?(Hash)
+      attach(predict_with(agent, state, reduced, **predict_options), meta)
+    end
 
-      out = result.dup
-      out["shortlist"] = meta
-      out
+    # An `embed_fn` backed by the checkpoint already loaded on `agent`.
+    #
+    # It mean-pools the encoder, which is cheap but blunt; a dedicated bi-encoder will usually
+    # shortlist better. The decision head never runs and nothing is downloaded.
+    def embed_fn_from_agent(agent, max_length: nil, batch_size: 32)
+      Util.positive_int!(max_length, "max_length") unless max_length.nil?
+      Util.positive_int!(batch_size, "batch_size")
+
+      ->(texts) { agent.embed(texts, max_length: max_length, batch_size: batch_size) }
+    end
+
+    # What ranking a question produced.
+    Ranking = Struct.new(:labels, :scores, :passthrough, :n, :k, keyword_init: true) do
+      def to_h
+        { "labels" => labels.dup, "scores" => scores, "k" => k, "n" => n, "passthrough" => passthrough }
+      end
+    end
+
+    def choice?(definition)
+      definition.is_a?(Hash) && Util.get(definition, "type").to_s == "choice"
+    end
+
+    def rank_question(id, definition, state, embed_fn, k)
+      unless Util.key?(definition, "criteria")
+        raise ArgumentError, "question #{id.inspect} is a choice but has no criteria"
+      end
+
+      rank(state, Util.get(definition, "criteria"), embed_fn, k, Util.get(definition, "instructions"))
     end
 
     def rank(state, criteria, embed_fn, k, instructions)
       checked = Util.positive_int!(k, "k")
       items = criteria_items(criteria)
-      n = items.length
-      keys = items.map(&:first)
-      return [keys, nil, true, n] if checked >= n
+      labels = items.map(&:first)
+      if checked >= items.length
+        return Ranking.new(labels: labels, scores: nil, passthrough: true, n: items.length, k: checked)
+      end
 
-      query = query_text(state, instructions)
-      matrix = embeddings(embed_fn, [query] + option_texts(items))
-      sims = cosine(matrix[0], matrix[1..])
-      order = (0...n).sort_by { |i| [-sims[i], i] }.first(checked)
-      [order.map { |i| keys[i] }, order.map { |i| sims[i] }, false, n]
+      matrix = embeddings(embed_fn, [query_text(state, instructions)] + option_texts(items))
+      scores = cosine(matrix.first, matrix.drop(1))
+      order = (0...items.length).sort_by { |i| [-scores[i], i] }.first(checked)
+      Ranking.new(labels: order.map { |i| labels[i] }, scores: order.map { |i| scores[i] },
+                  passthrough: false, n: items.length, k: checked)
     end
 
     def criteria_items(criteria)
       items = case criteria
               when Hash then criteria.to_a
-              when Array then criteria.map { |item| [item, nil] }
-              else raise TypeError, "choice criteria must be a Hash or Array, got #{criteria.class}"
+              when Array then criteria.map { |label| [label, nil] }
+              else raise TypeError, "choice criteria must be a Hash or an Array, got #{criteria.class}"
               end
       raise ArgumentError, "choice criteria must contain at least one option" if items.empty?
 
-      seen = {}
-      items.map(&:first).each do |key|
-        raise ArgumentError, "choice criteria label #{key.inspect} is duplicated" if seen.key?(key)
+      duplicate = items.map(&:first).tally.find { |_label, count| count > 1 }
+      raise ArgumentError, "choice criteria label #{duplicate.first.inspect} is duplicated" if duplicate
 
-        seen[key] = true
-      end
       items
     end
 
     def option_texts(items)
-      rendered = Common.render_options({ t: "choice", ins: "", crit: items.to_h })
-      raise ArgumentError, "could not render every choice option" if rendered.length != items.length
-
-      rendered.map(&:to_s)
+      Common.render_options({ t: "choice", ins: "", crit: items.to_h }).map(&:to_s)
     end
 
     def query_text(state, instructions)
@@ -125,109 +120,71 @@ module Laya
       "#{instructions}\n#{body}"
     end
 
-    def subset_criteria(criteria, labels)
-      return labels.to_h { |label| [label, criteria[label]] } if criteria.is_a?(Hash)
-
-      labels.dup
+    def narrow(definition, labels)
+      criteria = Util.get(definition, "criteria")
+      kept = criteria.is_a?(Hash) ? labels.to_h { |label| [label, criteria[label]] } : labels.dup
+      Util.put(definition.dup, "criteria", kept)
     end
 
-    # Coerce whatever `embed_fn` returned into an Array of Float rows, replacing non-finite
-    # values with 0.0 and checking the shape is `(texts.length, dim)`.
+    # Whatever `embed_fn` returns, as rows of Float with non-finite values zeroed.
     def embeddings(embed_fn, texts)
-      raise TypeError, "embed_fn must be callable" unless Util.callable?(embed_fn)
+      raise TypeError, "embed_fn must respond to #call" unless embed_fn.respond_to?(:call)
 
-      raw = embed_fn.call(texts.dup)
-      rows = to_rows(raw)
-      unless rows.is_a?(Array) && rows.length == texts.length && rows.all? { |r| r.is_a?(Array) && !r.empty? } &&
-             rows.map(&:length).uniq.length <= 1
-        raise ArgumentError, "embed_fn must return an array of shape (#{texts.length}, dim), got #{shape_of(rows)}"
+      rows = rowify(embed_fn.call(texts.dup))
+      unless rows.is_a?(Array) && rows.length == texts.length &&
+             rows.all? { |row| row.is_a?(Array) && !row.empty? } && rows.map(&:length).uniq.length <= 1
+        raise ArgumentError, "embed_fn must return #{texts.length} vectors of equal width, got #{shape(rows)}"
       end
 
-      rows.map { |r| r.map { |v| finite_float(v) } }
+      rows.map { |row| row.map { |value| finite(value) } }
     end
 
-    def to_rows(raw)
-      raw = raw.detach.float.cpu if defined?(::Torch::Tensor) && raw.is_a?(::Torch::Tensor)
-      raw = raw.to_a if raw.respond_to?(:to_a) && !raw.is_a?(Array)
+    def rowify(raw)
+      return raw if raw.is_a?(Array)
+      return raw.to_a if raw.respond_to?(:to_a)
+
       raw
     end
 
-    def shape_of(rows)
+    def shape(rows)
       return rows.class.to_s unless rows.is_a?(Array)
-      return "(#{rows.length},)" unless rows.first.is_a?(Array)
+      return "#{rows.length} values" unless rows.first.is_a?(Array)
 
-      "(#{rows.length}, #{rows.map { |r| r.is_a?(Array) ? r.length : 1 }.uniq.join('|')})"
+      "#{rows.length} x #{rows.map { |row| row.is_a?(Array) ? row.length : 1 }.uniq.join('|')}"
     end
 
-    def finite_float(v)
-      f = Float(v)
-      f.finite? ? f : 0.0
+    def finite(value)
+      number = Float(value)
+      number.finite? ? number : 0.0
     rescue ArgumentError, TypeError
       0.0
     end
 
-    def cosine(query, docs)
-      qn = Math.sqrt(query.sum { |v| v * v })
-      return Array.new(docs.length, 0.0) if qn == 0.0
+    # Cosine similarity, clipped to [-1, 1] so rounding never reports an impossible score.
+    def cosine(query, documents)
+      norm = Math.sqrt(query.sum { |value| value * value })
+      return Array.new(documents.length, 0.0) if norm.zero? || documents.empty?
 
-      docs.map do |d|
-        dn = Math.sqrt(d.sum { |v| v * v })
-        denom = dn * qn
-        denom > 0.0 ? d.each_with_index.sum { |v, i| v * query[i] } / denom : 0.0
+      documents.map do |document|
+        length = Math.sqrt(document.sum { |value| value * value })
+        next 0.0 unless (length * norm).positive?
+
+        (document.each_with_index.sum { |value, i| value * query[i] } / (length * norm)).clamp(-1.0, 1.0)
       end
     end
 
-    def call_predict(agent, state, questions, **predict_kwargs)
-      if agent.respond_to?(:predict)
-        agent.predict(state, questions, **predict_kwargs)
-      elsif agent.respond_to?(:system_one)
-        agent.system_one(state, questions, **predict_kwargs)
-      else
-        raise TypeError, "agent must provide predict or system_one"
-      end
+    def predict_with(agent, state, questions, **)
+      return agent.predict(state, questions, **) if agent.respond_to?(:predict)
+      return agent.system_one(state, questions, **) if agent.respond_to?(:system_one)
+
+      raise TypeError, "agent must respond to #predict or #system_one"
     end
 
-    # Mean-pool the checkpoint encoder already loaded on `agent`.
-    #
-    # Returns a lambda that embeds an Array of Strings with `agent.tok` and
-    # `agent.model.encoder`. It does not run the decision head and does not download weights.
-    # A dedicated bi-encoder passed as `embed_fn` will usually shortlist better; this helper is
-    # for callers who only have the Laya checkpoint in memory.
-    #
-    # Padding positions are excluded from the mean.
-    def embed_fn_from_agent(agent, max_length: 512, batch_size: 32)
-      Util.positive_int!(max_length, "max_length")
-      Util.positive_int!(batch_size, "batch_size")
-      require "torch"
+    def attach(result, meta)
+      return result.with_shortlist(meta) if result.respond_to?(:with_shortlist)
+      return result.merge("shortlist" => meta) if result.is_a?(Hash)
 
-      tok = agent.tok
-      encoder = agent.model.encoder
-      device = agent.device
-
-      lambda do |texts|
-        rows = texts.map { |t| t.nil? ? "" : t.to_s }
-        hidden = hidden_size(encoder)
-        return Array.new(0) { Array.new(hidden, 0.0) } if rows.empty?
-
-        parts = []
-        rows.each_slice(batch_size) do |chunk|
-          encoded = tok.encode_batch(chunk, max_length: max_length)
-          input_ids = ::Torch.tensor(encoded["input_ids"], dtype: :int64).to(device)
-          attention_mask = ::Torch.tensor(encoded["attention_mask"], dtype: :int64).to(device)
-          ::Torch.no_grad do
-            hidden_states = encoder.call(input_ids, attention_mask)
-            mask = attention_mask.unsqueeze(-1).to(dtype: hidden_states.dtype)
-            pooled = (hidden_states * mask).sum(1) / mask.sum(1).clamp(1.0, nil)
-            parts.concat(pooled.float.cpu.to_a)
-          end
-        end
-        parts
-      end
-    end
-
-    def hidden_size(encoder)
-      size = encoder.respond_to?(:config) ? encoder.config.hidden_size : nil
-      size.is_a?(Integer) && size >= 1 ? size : 0
+      raise TypeError, "predict must return a Laya::Result or a Hash, got #{result.class}"
     end
   end
 end

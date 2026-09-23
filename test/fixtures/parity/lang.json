@@ -1,0 +1,1200 @@
+{
+ "laya_version": "0.3.7",
+ "data": {
+  "texts": [
+   {
+    "text": "",
+    "script": "unknown",
+    "profile": {},
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "12345 6789",
+    "script": "unknown",
+    "profile": {},
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "   ",
+    "script": "unknown",
+    "profile": {},
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "?!.,",
+    "script": "unknown",
+    "profile": {},
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "refund me",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Care este ora in Tokyo?",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "en",
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "en",
+     "is_english": true,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "The customer was charged twice and wants a refund.",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "en",
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "en",
+     "is_english": true,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Please refund the duplicate charge on invoice 4411 today.",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "en",
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "en",
+     "is_english": true,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "We visited a cafe in Zurich and the naive assumption about the invoice was wrong, so please refund",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "en",
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "en",
+     "is_english": true,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Le client a été facturé deux fois et demande un remboursement.",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "fr",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "fr",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0484,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Le client a ete facture deux fois et il demande un remboursement pour la facture",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "fr",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "fr",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Der Kunde wurde zweimal belastet und möchte eine Rückerstattung für die Rechnung",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "de",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "de",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0375,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Der Kunde wurde zweimal belastet und moechte eine Rueckerstattung fuer die Rechnung die nicht korrekt ist",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "de",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "de",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "El cliente fue cobrado dos veces y quiere que le devuelvan el dinero por la factura",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "es",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "es",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Me cobraron dos veces la factura, por favor devuelvanme el dinero hoy",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "es",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "es",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Fui cobrado duas vezes na fatura de março, quero o dinheiro de volta",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "pt",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "pt",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0147,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Voce pode me mandar a nota fiscal? Preciso dela hoje para o financeiro",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "pt",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "pt",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Deu erro 500 no endpoint de login depois do update, alguem pode ver isso",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "pt",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "pt",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Il cliente è stato addebitato due volte e vuole il rimborso della fattura",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "it",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "it",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0137,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Ho ricevuto la fattura sbagliata, vorrei il rimborso subito per favore",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "it",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "it",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "De klant is twee keer in rekening gebracht en wil geld terug voor de factuur",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "en",
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "en",
+     "is_english": true,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Gătește-mi o rețetă de sarmale de post pentru mâine.",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "ro",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "ro",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0962,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Am fost taxat de două ori pentru factura din luna martie și vreau banii",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "ro",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "ro",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0282,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Exportă APK-ul pentru Android și pune-l pe Drive ca să-l instalez.",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "ro",
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "ro",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0455,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Cât e ora acum la Tokyo",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0435,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Klient został obciążony dwukrotnie i chce zwrot pieniędzy za fakturę",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0735,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Zákazníkovi byla částka účtována dvakrát a žádá o vrácení peněz",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.2222,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Müşteriden iki kez ücret alındı ve para iadesi istiyor lütfen yardım",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.1029,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Khách hàng đã bị thu phí hai lần và muốn được hoàn tiền ngay",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.1333,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Հայերեն",
+    "script": "armenian",
+    "profile": {
+     "armenian": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "armenian",
+     "script_profile": {
+      "armenian": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "ՀԱՅԵՐԵՆ",
+    "script": "armenian",
+    "profile": {
+     "armenian": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "armenian",
+     "script_profile": {
+      "armenian": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "։֊",
+    "script": "unknown",
+    "profile": {},
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Հայերեն abc",
+    "script": "armenian",
+    "profile": {
+     "latin": 0.3,
+     "armenian": 0.7
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "armenian",
+     "script_profile": {
+      "latin": 0.3,
+      "armenian": 0.7
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.7
+    }
+   },
+   {
+    "text": "ग्राहक से दो बार शुल्क लिया गया और वह धनवापसी चाहता है।",
+    "script": "devanagari",
+    "profile": {
+     "devanagari": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "devanagari",
+     "script_profile": {
+      "devanagari": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "お客様は二重に請求されたため返金を希望しています。",
+    "script": "kana",
+    "profile": {
+     "kana": 0.5833333333,
+     "han": 0.4166666667
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "kana",
+     "script_profile": {
+      "kana": 0.5833333333333334,
+      "han": 0.4166666666666667
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "客户被重复扣款要求退款",
+    "script": "han",
+    "profile": {
+     "han": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "han",
+     "script_profile": {
+      "han": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "고객이 두 번 청구되어 환불을 원합니다",
+    "script": "hangul",
+    "profile": {
+     "hangul": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "hangul",
+     "script_profile": {
+      "hangul": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "تم خصم المبلغ مرتين من العميل ويريد استرداد الأموال",
+    "script": "arabic",
+    "profile": {
+     "arabic": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "arabic",
+     "script_profile": {
+      "arabic": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "வாடிக்கையாளரிடம் இருமுறை கட்டணம் வசூலிக்கப்பட்டது",
+    "script": "tamil",
+    "profile": {
+     "tamil": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "tamil",
+     "script_profile": {
+      "tamil": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "С клиента дважды сняли деньги и он хочет возврат",
+    "script": "cyrillic",
+    "profile": {
+     "cyrillic": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "cyrillic",
+     "script_profile": {
+      "cyrillic": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "ลูกค้าถูกเรียกเก็บเงินสองครั้งและต้องการเงินคืน",
+    "script": "thai",
+    "profile": {
+     "thai": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "thai",
+     "script_profile": {
+      "thai": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "Ο πελάτης χρεώθηκε δύο φορές και θέλει επιστροφή χρημάτων",
+    "script": "greek",
+    "profile": {
+     "greek": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "greek",
+     "script_profile": {
+      "greek": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "הלקוח חויב פעמיים ורוצה החזר כספי",
+    "script": "hebrew",
+    "profile": {
+     "hebrew": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "hebrew",
+     "script_profile": {
+      "hebrew": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "ᚠᚢᚦᚨᚱᚲ ᚷᛖᛒᛟ",
+    "script": "other",
+    "profile": {
+     "other": 1.0
+    },
+    "guess": null,
+    "is_english": false,
+    "analyse": {
+     "script": "other",
+     "script_profile": {
+      "other": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "text": "ＡＢＣ ｄｅｆ",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "See github.com and user@acme.com for the invoice details we discussed",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": "en",
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "en",
+     "is_english": true,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Envie para financeiro@empresa.com.br o boleto v1.2.3 com.br",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "text": "Ich brauche die Rechnung",
+    "script": "latin",
+    "profile": {
+     "latin": 1.0
+    },
+    "guess": null,
+    "is_english": true,
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   }
+  ],
+  "states": [
+   {
+    "state": null,
+    "text": "",
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {},
+    "text": "",
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": [],
+    "text": "",
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": "plain string",
+    "text": "plain string",
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "body": "charged twice",
+     "n": 3
+    },
+    "text": "charged twice",
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "a": {
+      "b": [
+       "deep"
+      ]
+     }
+    },
+    "text": "deep",
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": [
+     "x",
+     {
+      "y": "z"
+     }
+    ],
+    "text": "x z",
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "subject": "नमस्ते",
+     "body": "ग्राहक से दो बार शुल्क लिया गया"
+    },
+    "text": "नमस्ते ग्राहक से दो बार शुल्क लिया गया",
+    "analyse": {
+     "script": "devanagari",
+     "script_profile": {
+      "devanagari": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "state": {
+     "message": "I was charged twice, please refund."
+    },
+    "text": "I was charged twice, please refund.",
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "en",
+     "is_english": true,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "message": "मुझसे दो बार शुल्क लिया गया"
+    },
+    "text": "मुझसे दो बार शुल्क लिया गया",
+    "analyse": {
+     "script": "devanagari",
+     "script_profile": {
+      "devanagari": 1.0
+     },
+     "language": null,
+     "is_english": false,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 1.0
+    }
+   },
+   {
+    "state": {
+     "message": "Quero cancelar minha assinatura"
+    },
+    "text": "Quero cancelar minha assinatura",
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "pt",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "from": "a@b.com",
+     "subject": "Fatura",
+     "body": "Fui cobrado duas vezes, quero reembolso agora"
+    },
+    "text": "a@b.com Fatura Fui cobrado duas vezes, quero reembolso agora",
+    "analyse": {
+     "script": "latin",
+     "script_profile": {
+      "latin": 1.0
+     },
+     "language": "pt",
+     "is_english": false,
+     "language_undecided": false,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "body": 42
+    },
+    "text": "",
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "body": true
+    },
+    "text": "",
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   },
+   {
+    "state": {
+     "body": null
+    },
+    "text": "",
+    "analyse": {
+     "script": "unknown",
+     "script_profile": {},
+     "language": null,
+     "is_english": true,
+     "language_undecided": true,
+     "diacritic_rate": 0.0,
+     "non_latin_fraction": 0.0
+    }
+   }
+  ],
+  "long_state_text_length": 4000
+ }
+}

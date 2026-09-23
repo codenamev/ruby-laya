@@ -1,0 +1,133 @@
+{
+ "laya_version": "0.3.7",
+ "data": {
+  "cases": [
+   {
+    "k": 1,
+    "labels": [
+     "alpha"
+    ],
+    "calls": [
+     [
+      "pay me",
+      "alpha",
+      "beta",
+      "gamma: mid",
+      "delta: same"
+     ]
+    ]
+   },
+   {
+    "k": 2,
+    "labels": [
+     "alpha",
+     "delta"
+    ],
+    "calls": [
+     [
+      "pay me",
+      "alpha",
+      "beta",
+      "gamma: mid",
+      "delta: same"
+     ]
+    ]
+   },
+   {
+    "k": 3,
+    "labels": [
+     "alpha",
+     "delta",
+     "gamma"
+    ],
+    "calls": [
+     [
+      "pay me",
+      "alpha",
+      "beta",
+      "gamma: mid",
+      "delta: same"
+     ]
+    ]
+   },
+   {
+    "k": 4,
+    "labels": [
+     "alpha",
+     "beta",
+     "gamma",
+     "delta"
+    ],
+    "calls": []
+   },
+   {
+    "k": 20,
+    "labels": [
+     "alpha",
+     "beta",
+     "gamma",
+     "delta"
+    ],
+    "calls": []
+   },
+   {
+    "k": 2,
+    "labels": [
+     "alpha",
+     "beta"
+    ],
+    "calls": [
+     [
+      "pay me",
+      "alpha",
+      "beta",
+      "gamma: mid",
+      "delta: same"
+     ]
+    ],
+    "note": "zero query"
+   },
+   {
+    "k": 1,
+    "labels": [
+     "beta"
+    ],
+    "calls": [
+     [
+      "pay me",
+      "alpha",
+      "beta"
+     ]
+    ],
+    "note": "nan vector"
+   }
+  ],
+  "predict": {
+   "shortlist": {
+    "intent": {
+     "labels": [
+      "tech",
+      "sales"
+     ],
+     "scores": [
+      1.0,
+      0.7071067811865475
+     ],
+     "k": 2,
+     "n": 4,
+     "passthrough": false
+    }
+   },
+   "questions_seen": {
+    "intent": {
+     "type": "choice",
+     "instructions": "Which desk?",
+     "criteria": {
+      "tech": "bugs",
+      "sales": null
+     }
+    }
+   }
+  }
+ }
+}

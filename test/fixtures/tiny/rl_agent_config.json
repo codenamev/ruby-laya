@@ -2,19 +2,21 @@
   "encoder": "unused/offline",
   "head_layers": 1,
   "act_costs": {
-    "act": 0
+    "escalate": 0.5
   },
   "max_len": 64,
   "head_max_len": 32,
   "amp_dtype": "fp16",
   "temperature": [
-    1.0,
-    1.2,
-    0.8
+    1.6,
+    1.25,
+    1.98
   ],
   "temperature_by_options": {
-    "choice:2": 1.5,
-    "choice:3-5": 0.1006,
-    "noul:2": 1.1
+    "choice:2": 1.9,
+    "choice:3-5": 1.76,
+    "choice:11+": 0.1006,
+    "noul:2": 1.98,
+    "bad": "not a number"
   }
 }

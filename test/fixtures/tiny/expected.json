@@ -1,0 +1,1042 @@
+{
+ "laya_version": "0.3.7",
+ "data": {
+  "cases": [
+   {
+    "label": "full batch",
+    "state": {
+     "from": "hello@world",
+     "subject": "duplicate charge on invoice",
+     "body": "we were charged twice for the invoice please refund the money back today"
+    },
+    "questions": {
+     "department": {
+      "type": "choice",
+      "instructions": "which team",
+      "criteria": {
+       "billing": "invoice refund",
+       "technical": "bug outage",
+       "other": null
+      }
+     },
+     "urgency": {
+      "type": "score",
+      "instructions": "how urgent",
+      "criteria": [
+       "no",
+       "yes",
+       "money back today"
+      ]
+     },
+     "refund": {
+      "type": "noul",
+      "instructions": "does the message ask for money back"
+     },
+     "phish": {
+      "type": "noul",
+      "instructions": "is this a scam",
+      "criteria": {
+       "true": {
+        "desc": "scam"
+       },
+       "false": "legitimate"
+      }
+     },
+     "single": {
+      "type": "choice",
+      "instructions": "only one",
+      "criteria": [
+       "yes"
+      ]
+     },
+     "many": {
+      "type": "choice",
+      "instructions": "which label",
+      "criteria": {
+       "label 0": "description number 0",
+       "label 1": "description number 1",
+       "label 2": "description number 2",
+       "label 3": "description number 3",
+       "label 4": "description number 4",
+       "label 5": "description number 5",
+       "label 6": "description number 6",
+       "label 7": "description number 7",
+       "label 8": "description number 8",
+       "label 9": "description number 9",
+       "label 10": "description number 10",
+       "label 11": "description number 11"
+      }
+     }
+    },
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {
+      "department": {
+       "type": "choice",
+       "choice": "billing",
+       "probabilities": {
+        "billing": 0.3363,
+        "technical": 0.3331,
+        "other": 0.3306
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.1168
+       }
+      },
+      "urgency": {
+       "type": "score",
+       "score": 1.003,
+       "legend": {
+        "0": "no",
+        "1": "yes",
+        "2": "money back today"
+       },
+       "probabilities": {
+        "0": 0.3323,
+        "1": 0.3325,
+        "2": 0.3353
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.0021
+       }
+      },
+      "refund": {
+       "type": "noul",
+       "noul": 0.5031,
+       "confidence": 0.5031,
+       "action": {
+        "act_probability": 0.0317
+       }
+      },
+      "phish": {
+       "type": "noul",
+       "noul": 0.4941,
+       "confidence": 0.5059,
+       "action": {
+        "act_probability": 0.1148
+       }
+      },
+      "single": {
+       "type": "choice",
+       "choice": "yes",
+       "probabilities": {
+        "yes": 1.0
+       },
+       "confidence": 1.0,
+       "action": {
+        "act_probability": 0.0137
+       }
+      },
+      "many": {
+       "type": "choice",
+       "choice": "label 11",
+       "probabilities": {
+        "label 0": 0.0846,
+        "label 1": 0.0825,
+        "label 2": 0.0825,
+        "label 3": 0.0827,
+        "label 4": 0.0829,
+        "label 5": 0.0831,
+        "label 6": 0.083,
+        "label 7": 0.0831,
+        "label 8": 0.0834,
+        "label 9": 0.0836,
+        "label 10": 0.0838,
+        "label 11": 0.0849
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.4143
+       }
+      }
+     },
+     "usage": {
+      "input_tokens": 348,
+      "output_tokens": 0
+     }
+    }
+   },
+   {
+    "label": "one question",
+    "state": {
+     "from": "hello@world",
+     "subject": "duplicate charge on invoice",
+     "body": "we were charged twice for the invoice please refund the money back today"
+    },
+    "questions": {
+     "refund": {
+      "type": "noul",
+      "instructions": "does the message ask for money back"
+     }
+    },
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {
+      "refund": {
+       "type": "noul",
+       "noul": 0.5031,
+       "confidence": 0.5031,
+       "action": {
+        "act_probability": 0.0317
+       }
+      }
+     },
+     "usage": {
+      "input_tokens": 64,
+      "output_tokens": 0
+     }
+    }
+   },
+   {
+    "label": "single option",
+    "state": "refund me",
+    "questions": {
+     "single": {
+      "type": "choice",
+      "instructions": "only one",
+      "criteria": [
+       "yes"
+      ]
+     }
+    },
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {
+      "single": {
+       "type": "choice",
+       "choice": "yes",
+       "probabilities": {
+        "yes": 1.0
+       },
+       "confidence": 1.0,
+       "action": {
+        "act_probability": 0.488
+       }
+      }
+     },
+     "usage": {
+      "input_tokens": 13,
+      "output_tokens": 0
+     }
+    }
+   },
+   {
+    "label": "many options",
+    "state": "please refund the charge",
+    "questions": {
+     "many": {
+      "type": "choice",
+      "instructions": "which label",
+      "criteria": {
+       "label 0": "description number 0",
+       "label 1": "description number 1",
+       "label 2": "description number 2",
+       "label 3": "description number 3",
+       "label 4": "description number 4",
+       "label 5": "description number 5",
+       "label 6": "description number 6",
+       "label 7": "description number 7",
+       "label 8": "description number 8",
+       "label 9": "description number 9",
+       "label 10": "description number 10",
+       "label 11": "description number 11"
+      }
+     }
+    },
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {
+      "many": {
+       "type": "choice",
+       "choice": "label 0",
+       "probabilities": {
+        "label 0": 0.0849,
+        "label 1": 0.0827,
+        "label 2": 0.0825,
+        "label 3": 0.0826,
+        "label 4": 0.0827,
+        "label 5": 0.0831,
+        "label 6": 0.083,
+        "label 7": 0.0832,
+        "label 8": 0.0834,
+        "label 9": 0.0835,
+        "label 10": 0.0836,
+        "label 11": 0.0848
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.4072
+       }
+      }
+     },
+     "usage": {
+      "input_tokens": 61,
+      "output_tokens": 0
+     }
+    }
+   },
+   {
+    "label": "string state",
+    "state": "we were charged twice please refund",
+    "questions": {
+     "department": {
+      "type": "choice",
+      "instructions": "which team",
+      "criteria": {
+       "billing": "invoice refund",
+       "technical": "bug outage",
+       "other": null
+      }
+     },
+     "urgency": {
+      "type": "score",
+      "instructions": "how urgent",
+      "criteria": [
+       "no",
+       "yes",
+       "money back today"
+      ]
+     },
+     "refund": {
+      "type": "noul",
+      "instructions": "does the message ask for money back"
+     },
+     "phish": {
+      "type": "noul",
+      "instructions": "is this a scam",
+      "criteria": {
+       "true": {
+        "desc": "scam"
+       },
+       "false": "legitimate"
+      }
+     },
+     "single": {
+      "type": "choice",
+      "instructions": "only one",
+      "criteria": [
+       "yes"
+      ]
+     },
+     "many": {
+      "type": "choice",
+      "instructions": "which label",
+      "criteria": {
+       "label 0": "description number 0",
+       "label 1": "description number 1",
+       "label 2": "description number 2",
+       "label 3": "description number 3",
+       "label 4": "description number 4",
+       "label 5": "description number 5",
+       "label 6": "description number 6",
+       "label 7": "description number 7",
+       "label 8": "description number 8",
+       "label 9": "description number 9",
+       "label 10": "description number 10",
+       "label 11": "description number 11"
+      }
+     }
+    },
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {
+      "department": {
+       "type": "choice",
+       "choice": "billing",
+       "probabilities": {
+        "billing": 0.3392,
+        "technical": 0.3326,
+        "other": 0.3282
+       },
+       "confidence": 0.0001,
+       "action": {
+        "act_probability": 0.2187
+       }
+      },
+      "urgency": {
+       "type": "score",
+       "score": 1.0001,
+       "legend": {
+        "0": "no",
+        "1": "yes",
+        "2": "money back today"
+       },
+       "probabilities": {
+        "0": 0.3324,
+        "1": 0.3352,
+        "2": 0.3325
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.002
+       }
+      },
+      "refund": {
+       "type": "noul",
+       "noul": 0.4959,
+       "confidence": 0.5041,
+       "action": {
+        "act_probability": 0.1665
+       }
+      },
+      "phish": {
+       "type": "noul",
+       "noul": 0.4941,
+       "confidence": 0.5059,
+       "action": {
+        "act_probability": 0.2336
+       }
+      },
+      "single": {
+       "type": "choice",
+       "choice": "yes",
+       "probabilities": {
+        "yes": 1.0
+       },
+       "confidence": 1.0,
+       "action": {
+        "act_probability": 0.5229
+       }
+      },
+      "many": {
+       "type": "choice",
+       "choice": "label 11",
+       "probabilities": {
+        "label 0": 0.0849,
+        "label 1": 0.0825,
+        "label 2": 0.0823,
+        "label 3": 0.0825,
+        "label 4": 0.0826,
+        "label 5": 0.0831,
+        "label 6": 0.0832,
+        "label 7": 0.0833,
+        "label 8": 0.0835,
+        "label 9": 0.0835,
+        "label 10": 0.0835,
+        "label 11": 0.0851
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.4703
+       }
+      }
+     },
+     "usage": {
+      "input_tokens": 203,
+      "output_tokens": 0
+     }
+    }
+   },
+   {
+    "label": "empty questions",
+    "state": {
+     "from": "hello@world",
+     "subject": "duplicate charge on invoice",
+     "body": "we were charged twice for the invoice please refund the money back today"
+    },
+    "questions": {},
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {},
+     "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+     }
+    }
+   },
+   {
+    "label": "long state",
+    "state": {
+     "body": "charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice charged twice for the invoice "
+    },
+    "questions": {
+     "department": {
+      "type": "choice",
+      "instructions": "which team",
+      "criteria": {
+       "billing": "invoice refund",
+       "technical": "bug outage",
+       "other": null
+      }
+     },
+     "urgency": {
+      "type": "score",
+      "instructions": "how urgent",
+      "criteria": [
+       "no",
+       "yes",
+       "money back today"
+      ]
+     },
+     "refund": {
+      "type": "noul",
+      "instructions": "does the message ask for money back"
+     },
+     "phish": {
+      "type": "noul",
+      "instructions": "is this a scam",
+      "criteria": {
+       "true": {
+        "desc": "scam"
+       },
+       "false": "legitimate"
+      }
+     },
+     "single": {
+      "type": "choice",
+      "instructions": "only one",
+      "criteria": [
+       "yes"
+      ]
+     },
+     "many": {
+      "type": "choice",
+      "instructions": "which label",
+      "criteria": {
+       "label 0": "description number 0",
+       "label 1": "description number 1",
+       "label 2": "description number 2",
+       "label 3": "description number 3",
+       "label 4": "description number 4",
+       "label 5": "description number 5",
+       "label 6": "description number 6",
+       "label 7": "description number 7",
+       "label 8": "description number 8",
+       "label 9": "description number 9",
+       "label 10": "description number 10",
+       "label 11": "description number 11"
+      }
+     }
+    },
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {
+      "department": {
+       "type": "choice",
+       "choice": "billing",
+       "probabilities": {
+        "billing": 0.3357,
+        "technical": 0.3324,
+        "other": 0.3318
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.0931
+       }
+      },
+      "urgency": {
+       "type": "score",
+       "score": 1.0042,
+       "legend": {
+        "0": "no",
+        "1": "yes",
+        "2": "money back today"
+       },
+       "probabilities": {
+        "0": 0.3313,
+        "1": 0.3332,
+        "2": 0.3355
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.0052
+       }
+      },
+      "refund": {
+       "type": "noul",
+       "noul": 0.4977,
+       "confidence": 0.5023,
+       "action": {
+        "act_probability": 0.0762
+       }
+      },
+      "phish": {
+       "type": "noul",
+       "noul": 0.4959,
+       "confidence": 0.5041,
+       "action": {
+        "act_probability": 0.1349
+       }
+      },
+      "single": {
+       "type": "choice",
+       "choice": "yes",
+       "probabilities": {
+        "yes": 1.0
+       },
+       "confidence": 1.0,
+       "action": {
+        "act_probability": 0.0081
+       }
+      },
+      "many": {
+       "type": "choice",
+       "choice": "label 0",
+       "probabilities": {
+        "label 0": 0.0852,
+        "label 1": 0.0826,
+        "label 2": 0.0823,
+        "label 3": 0.0825,
+        "label 4": 0.0826,
+        "label 5": 0.0832,
+        "label 6": 0.0832,
+        "label 7": 0.0834,
+        "label 8": 0.0835,
+        "label 9": 0.0833,
+        "label 10": 0.0833,
+        "label 11": 0.0848
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.4773
+       }
+      }
+     },
+     "usage": {
+      "input_tokens": 384,
+      "output_tokens": 0
+     }
+    }
+   },
+   {
+    "label": "list state",
+    "state": [
+     "hello world",
+     {
+      "body": "refund me today"
+     }
+    ],
+    "questions": {
+     "department": {
+      "type": "choice",
+      "instructions": "which team",
+      "criteria": {
+       "billing": "invoice refund",
+       "technical": "bug outage",
+       "other": null
+      }
+     },
+     "urgency": {
+      "type": "score",
+      "instructions": "how urgent",
+      "criteria": [
+       "no",
+       "yes",
+       "money back today"
+      ]
+     },
+     "refund": {
+      "type": "noul",
+      "instructions": "does the message ask for money back"
+     },
+     "phish": {
+      "type": "noul",
+      "instructions": "is this a scam",
+      "criteria": {
+       "true": {
+        "desc": "scam"
+       },
+       "false": "legitimate"
+      }
+     },
+     "single": {
+      "type": "choice",
+      "instructions": "only one",
+      "criteria": [
+       "yes"
+      ]
+     },
+     "many": {
+      "type": "choice",
+      "instructions": "which label",
+      "criteria": {
+       "label 0": "description number 0",
+       "label 1": "description number 1",
+       "label 2": "description number 2",
+       "label 3": "description number 3",
+       "label 4": "description number 4",
+       "label 5": "description number 5",
+       "label 6": "description number 6",
+       "label 7": "description number 7",
+       "label 8": "description number 8",
+       "label 9": "description number 9",
+       "label 10": "description number 10",
+       "label 11": "description number 11"
+      }
+     }
+    },
+    "predict": {
+     "model": "laya-rl-agent",
+     "answers": {
+      "department": {
+       "type": "choice",
+       "choice": "billing",
+       "probabilities": {
+        "billing": 0.3375,
+        "technical": 0.3331,
+        "other": 0.3293
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.2483
+       }
+      },
+      "urgency": {
+       "type": "score",
+       "score": 1.0037,
+       "legend": {
+        "0": "no",
+        "1": "yes",
+        "2": "money back today"
+       },
+       "probabilities": {
+        "0": 0.3313,
+        "1": 0.3336,
+        "2": 0.335
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.0286
+       }
+      },
+      "refund": {
+       "type": "noul",
+       "noul": 0.5022,
+       "confidence": 0.5022,
+       "action": {
+        "act_probability": 0.117
+       }
+      },
+      "phish": {
+       "type": "noul",
+       "noul": 0.4972,
+       "confidence": 0.5028,
+       "action": {
+        "act_probability": 0.2714
+       }
+      },
+      "single": {
+       "type": "choice",
+       "choice": "yes",
+       "probabilities": {
+        "yes": 1.0
+       },
+       "confidence": 1.0,
+       "action": {
+        "act_probability": 0.064
+       }
+      },
+      "many": {
+       "type": "choice",
+       "choice": "label 11",
+       "probabilities": {
+        "label 0": 0.0848,
+        "label 1": 0.0825,
+        "label 2": 0.0824,
+        "label 3": 0.0825,
+        "label 4": 0.0826,
+        "label 5": 0.083,
+        "label 6": 0.083,
+        "label 7": 0.0832,
+        "label 8": 0.0836,
+        "label 9": 0.0836,
+        "label 10": 0.0836,
+        "label 11": 0.0851
+       },
+       "confidence": 0.0,
+       "action": {
+        "act_probability": 0.5029
+       }
+      }
+     },
+     "usage": {
+      "input_tokens": 234,
+      "output_tokens": 0
+     }
+    }
+   }
+  ],
+  "embed": {
+   "texts": [
+    "hello world refund charged twice please invoice hello world refund charged twice please invoice hello world refund charged twice please invoice ",
+    "refund me",
+    ""
+   ],
+   "max_length": 40,
+   "input_ids": [
+    [
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    [
+     7,
+     70,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "attention_mask": [
+    [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    [
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "pooled": [
+    [
+     -0.02535039186477661,
+     -0.05984370410442352,
+     0.004289614502340555,
+     -0.005711066070944071,
+     0.10393266379833221,
+     -0.033971432596445084,
+     -0.040929555892944336,
+     -0.10656426101922989,
+     0.28765207529067993,
+     0.3890324532985687,
+     0.04800368472933769,
+     -0.2642844021320343,
+     -0.0744074210524559,
+     0.23641690611839294,
+     0.5876275300979614,
+     0.13088607788085938,
+     1.0542104244232178,
+     0.08027327805757523,
+     0.035100050270557404,
+     -0.4349009692668915,
+     0.032023344188928604,
+     0.3822716176509857,
+     -0.006897774990648031,
+     -0.14381788671016693,
+     -0.08802257478237152,
+     0.12774299085140228,
+     0.012007894925773144,
+     0.12549850344657898,
+     0.004635043907910585,
+     0.061513643711805344,
+     -0.5031165480613708,
+     0.056100789457559586
+    ],
+    [
+     0.1400996893644333,
+     -0.3457341194152832,
+     0.11854282021522522,
+     0.08070151507854462,
+     -0.015867846086621284,
+     0.09433023631572723,
+     -0.02076912671327591,
+     0.12700778245925903,
+     0.24163654446601868,
+     0.0963779091835022,
+     -0.3198672831058502,
+     0.11726892739534378,
+     -0.10425879806280136,
+     -0.0347273088991642,
+     -0.10037249326705933,
+     0.19146040081977844,
+     0.24258676171302795,
+     -0.10709303617477417,
+     0.014580708928406239,
+     -0.23488491773605347,
+     0.14184172451496124,
+     -0.4295739531517029,
+     -0.00747589860111475,
+     -0.17423468828201294,
+     0.016037167981266975,
+     0.003105560317635536,
+     -0.056853920221328735,
+     -0.22784490883350372,
+     0.10438305139541626,
+     -0.026922542601823807,
+     0.18848833441734314,
+     -0.139337956905365
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ]
+  },
+  "temperatures": {
+   "raw": [
+    1.6,
+    1.25,
+    1.98
+   ],
+   "applied": [
+    1.6,
+    1.25,
+    1.98
+   ],
+   "by_options_raw": {
+    "choice:2": 1.9,
+    "choice:3-5": 1.76,
+    "choice:11+": 0.1006,
+    "noul:2": 1.98,
+    "bad": "not a number"
+   },
+   "by_options": {
+    "choice:2": 1.9,
+    "choice:3-5": 1.76,
+    "choice:11+": 0.5,
+    "noul:2": 1.98,
+    "bad": 1.0
+   }
+  }
+ }
+}

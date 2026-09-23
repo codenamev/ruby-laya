@@ -1,19 +1,28 @@
 # Changelog
 
-## 0.3.5
+## Unreleased
 
-Initial Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.5.
+### 0.1.0
 
-- `Laya::Agent` / `Laya.load`: load a checkpoint from a local directory or a Hugging Face repo
-  id (bundled subfolders supported), run every typed question in a single forward pass and
-  return calibrated probabilities, confidence and the action probability.
-- `Laya::Router`: script/language detection and per-request checkpoint selection with an LRU
-  of resident models, `preload`, `attach`, `unload`, explicit `model:` / `task:` / `lang:`.
-- `Laya::Lang`: dependency-free script detection and Latin-script language guess.
-- `Laya::Email`: quoted-history, signature and disclaimer cleaning; `email_state`.
-- `Laya::Presets`: triage, email, guard, moderation and model-routing question sets.
-- `Laya::Shortlist`: embedding shortlist for high-cardinality choice questions and
-  `embed_fn_from_agent`.
-- `Laya::Encoders`: ModernBERT / mmBERT and BERT encoders in torch-rb, loading the original
-  safetensors unchanged.
-- `Laya::PyJSON`: byte-identical `json.dumps` so model inputs tokenize exactly as in Python.
+First release: a Ruby port of [Laya](https://github.com/NandhaKishorM/laya) 0.3.7.
+
+- **Inference on ONNX Runtime.** `Laya.load` and `Laya::Router#predict` run ONNX exports of the
+  published checkpoints, so installing the gem needs no Python, no LibTorch and no compiler.
+  Exports are reproducible from `tools/export_onnx.py` and are verified against PyTorch before
+  they are written.
+- **Answers as objects.** `predict` returns a `Laya::Result` whose answers read as
+  `result[:intent].choice`, `.probability`, `.score`, `.label`, `.confidence`. `to_h` renders the
+  payload upstream's Python returns.
+- **Routing.** `Laya::Router` detects script and language, picks a checkpoint per request, keeps
+  two resident by default, and accepts a `lang_guess` hint or a callable for a real language
+  identifier. Loading is thread-safe; inference is not serialized behind it.
+- **Pure Ruby around the model.** Language and script detection, email cleaning for English,
+  Portuguese and Spanish, the five question presets, the embedding shortlist and the calibration
+  arithmetic need no ONNX Runtime at all.
+- **Downloads.** Checkpoints land in the standard Hugging Face cache and honour `HF_HOME`,
+  `HF_HUB_CACHE`, `HF_HUB_OFFLINE`, `HF_ENDPOINT` and `HF_TOKEN`.
+- **Faithfulness.** Over 3000 assertions compare this gem with fixtures recorded from upstream
+  Python, and an opt-in suite replays 43 calls across nine languages against the real checkpoints.
+
+Not ported: upstream's `serve.py` HTTP server, and training itself. The scoring arithmetic behind
+training (`Laya::Training`) is included.

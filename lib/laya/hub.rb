@@ -6,15 +6,28 @@ require "uri"
 require "fileutils"
 
 module Laya
-  # Minimal Hugging Face Hub client: list a repo's files and download the ones matching
-  # `allow_patterns` into a local cache, so a checkpoint id like "convaiinnovations/laya" works
-  # without any Python tooling.
+  # Downloads checkpoint files from the Hugging Face Hub into the standard Hugging Face cache, so
+  # `HF_HOME`, `HF_HUB_CACHE`, `HF_HUB_OFFLINE` and `HF_TOKEN` all behave as they do for any other
+  # Hub client, and a cached snapshot keeps working without a network.
   #
-  # Cache layout: `#{Hub.cache_dir}/models--org--name/#{revision}/<repo path>`. Set `LAYA_HOME`
-  # (or `HF_HOME`, whose `hub/` subfolder is used) to move it, `HF_ENDPOINT` to point at a
-  # mirror and `HF_TOKEN` for gated or private repos.
+  # Files land in `<cache>/models--<org>--<name>/snapshots/<revision sha>/<path>`, the layout the
+  # Hub's own tooling reads.
   module Hub
     MAX_REDIRECTS = 5
+    DEFAULT_REVISION = "main"
+
+    # Reports download progress. Replace it to drive your own progress bar, or set it to nil.
+    #
+    #   Laya::Hub.progress = ->(path, done, total) { ... }
+    class << self
+      attr_writer :progress
+
+      def progress
+        return @progress if defined?(@progress)
+
+        @progress = method(:report_progress)
+      end
+    end
 
     module_function
 
@@ -22,107 +35,163 @@ module Laya
       ENV.fetch("HF_ENDPOINT", "https://huggingface.co").sub(%r{/+\z}, "")
     end
 
+    def offline?
+      %w[1 true yes on].include?(ENV.fetch("HF_HUB_OFFLINE", "").downcase)
+    end
+
+    # An empty variable counts as unset, so exporting HF_TOKEN= does not hide the other name.
+    def token
+      [ENV.fetch("HF_TOKEN", nil), ENV.fetch("HUGGING_FACE_HUB_TOKEN", nil)].find { |value| present?(value) }
+    end
+
     def cache_dir
-      return File.expand_path(ENV["LAYA_HOME"]) if ENV["LAYA_HOME"] && !ENV["LAYA_HOME"].empty?
-      return File.join(File.expand_path(ENV["HF_HOME"]), "hub", "laya") if ENV["HF_HOME"] && !ENV["HF_HOME"].empty?
+      return File.expand_path(ENV["HF_HUB_CACHE"]) if present?(ENV["HF_HUB_CACHE"])
+      return File.join(File.expand_path(ENV["HF_HOME"]), "hub") if present?(ENV["HF_HOME"])
 
-      File.join(Dir.home, ".cache", "laya", "hub")
+      File.join(Dir.home, ".cache", "huggingface", "hub")
     end
 
-    def repo_dir(repo_id, revision: "main", cache_dir: nil)
-      File.join(cache_dir || Hub.cache_dir, "models--#{repo_id.gsub('/', '--')}", revision)
+    def present?(value)
+      value && !value.empty?
     end
 
-    # Download every file in `repo_id` matching one of `allow_patterns` (fnmatch, as on the Hub:
-    # `*` also matches `/`) and return the local snapshot directory. Files already present are
-    # not fetched again. When the Hub cannot be reached but a snapshot exists, that snapshot is
-    # returned so an offline process keeps working.
-    def snapshot_download(repo_id, allow_patterns: nil, token: nil, revision: "main", cache_dir: nil)
-      token ||= ENV.fetch("HF_TOKEN", nil)
-      target = repo_dir(repo_id, revision: revision, cache_dir: cache_dir)
-      files = list_files_or_cached(repo_id, target, token: token, revision: revision)
-      return target if files.nil?
+    def repo_dir(repo_id, cache_dir: nil)
+      File.join(cache_dir || Hub.cache_dir, "models--#{repo_id.gsub('/', '--')}")
+    end
 
-      selected = filter_files(files, allow_patterns)
-      if selected.empty?
-        raise DownloadError, "no files in #{repo_id.inspect} match #{Array(allow_patterns).inspect}"
+    # Download every file under `subfolder` matching `allow_patterns` and return the local
+    # directory holding them.
+    #
+    # Files already present are not fetched again. When the Hub cannot be reached, the newest
+    # cached snapshot is used instead, so an offline process keeps working.
+    def snapshot(repo_id, subfolder: nil, allow_patterns: nil, revision: DEFAULT_REVISION,
+                 token: nil, cache_dir: nil)
+      token ||= Hub.token
+      root = repo_dir(repo_id, cache_dir: cache_dir)
+      sha = resolve_revision(repo_id, revision, token: token, root: root)
+      snapshot_dir = File.join(root, "snapshots", sha)
+      target = subfolder ? File.join(snapshot_dir, subfolder) : snapshot_dir
+
+      if sha == cached_revision(root, revision) && offline?
+        raise DownloadError, "HF_HUB_OFFLINE is set and #{repo_id} is not cached" unless File.directory?(target)
+
+        return target
       end
 
-      selected.each do |path|
-        local = File.join(target, path)
-        next if File.file?(local) && File.size(local) > 0
+      prefix = subfolder ? "#{subfolder}/" : ""
+      wanted = Array(allow_patterns).map { |pattern| prefix + pattern }
+      files = filter(list_files(repo_id, revision: sha, token: token), wanted)
+      raise DownloadError, "no files in #{repo_id.inspect} match #{wanted.inspect}" if files.empty?
 
-        download_file(repo_id, path, local, token: token, revision: revision)
+      files.each do |path|
+        local = File.join(snapshot_dir, path)
+        next if File.file?(local) && File.size(local).positive?
+
+        download(repo_id, path, local, revision: sha, token: token)
       end
+      write_ref(root, revision, sha)
       target
     end
 
-    # The file list, or nil when the Hub is unreachable but a cached snapshot can stand in.
-    def list_files_or_cached(repo_id, target, token: nil, revision: "main")
-      list_files(repo_id, token: token, revision: revision)
-    rescue DownloadError => e
-      raise e unless Dir.exist?(target) && !Dir.empty?(target)
+    # The commit the revision points at, or the cached one when the Hub is unreachable.
+    def resolve_revision(repo_id, revision, token: nil, root: nil)
+      return cached_revision!(root, revision, repo_id) if offline?
 
-      warn "[laya] #{e.message}; using the cached snapshot at #{target}"
-      nil
+      uri = URI("#{endpoint}/api/models/#{repo_id}/revision/#{URI.encode_www_form_component(revision)}")
+      sha = JSON.parse(get(uri, token: token)).fetch("sha")
+      raise DownloadError, "#{repo_id} revision #{revision.inspect} has no commit sha" unless sha
+
+      sha
+    rescue JSON::ParserError, KeyError => e
+      raise DownloadError, "unexpected response resolving #{repo_id.inspect}: #{e.message}"
+    rescue DownloadError => e
+      cached = cached_revision(root, revision)
+      raise e unless cached
+
+      warn "[laya] #{e.message}; using the cached snapshot #{cached[0, 7]}"
+      cached
     end
 
-    def list_files(repo_id, token: nil, revision: "main")
+    def cached_revision(root, revision)
+      ref = File.join(root.to_s, "refs", revision.to_s)
+      File.file?(ref) ? File.read(ref).strip : nil
+    end
+
+    def cached_revision!(root, revision, repo_id)
+      cached_revision(root, revision) ||
+        raise(DownloadError, "HF_HUB_OFFLINE is set and #{repo_id} is not cached in #{root}")
+    end
+
+    def write_ref(root, revision, sha)
+      ref = File.join(root, "refs", revision.to_s)
+      FileUtils.mkdir_p(File.dirname(ref))
+      File.write(ref, sha)
+    end
+
+    def list_files(repo_id, revision: DEFAULT_REVISION, token: nil)
       uri = URI("#{endpoint}/api/models/#{repo_id}/revision/#{URI.encode_www_form_component(revision)}")
-      body = get(uri, token: token)
-      siblings = JSON.parse(body)["siblings"] || []
-      siblings.map { |s| s["rfilename"] }
+      JSON.parse(get(uri, token: token)).fetch("siblings", []).map { |sibling| sibling["rfilename"] }
     rescue JSON::ParserError => e
       raise DownloadError, "unexpected response listing #{repo_id.inspect}: #{e.message}"
     end
 
-    def filter_files(files, allow_patterns)
-      return files if allow_patterns.nil?
+    # Hub glob semantics: `*` matches across path separators too.
+    def filter(files, patterns)
+      return files if patterns.nil? || patterns.empty?
 
-      patterns = Array(allow_patterns)
-      files.select { |f| patterns.any? { |p| File.fnmatch(p, f, File::FNM_DOTMATCH) } }
+      files.select { |file| patterns.any? { |pattern| File.fnmatch(pattern, file, File::FNM_DOTMATCH) } }
     end
 
-    def download_file(repo_id, path, local, token: nil, revision: "main")
+    def download(repo_id, path, local, revision: DEFAULT_REVISION, token: nil)
       uri = URI("#{endpoint}/#{repo_id}/resolve/#{URI.encode_www_form_component(revision)}/#{path}")
       FileUtils.mkdir_p(File.dirname(local))
-      tmp = "#{local}.part"
-      File.open(tmp, "wb") do |io|
-        get(uri, token: token) { |chunk| io.write(chunk) }
+      partial = "#{local}.incomplete"
+      done = 0
+      File.open(partial, "wb") do |file|
+        get(uri, token: token) do |chunk, total|
+          file.write(chunk)
+          done += chunk.bytesize
+          Hub.progress&.call(path, done, total)
+        end
       end
-      File.rename(tmp, local)
+      File.rename(partial, local)
       local
     rescue StandardError => e
-      FileUtils.rm_f(tmp)
+      FileUtils.rm_f(partial.to_s)
       raise e
     end
 
-    # GET with redirects. Streams the body to the block when one is given, else returns it.
+    def report_progress(path, done, total)
+      return unless $stderr.tty?
+
+      percent = total.to_i.positive? ? format(" %3d%%", 100 * done / total) : ""
+      $stderr.print(format("\r[laya] %s%s %.0f MB", File.basename(path), percent, done / 1e6))
+      $stderr.print("\n") if total.to_i.positive? && done >= total
+    end
+
+    # GET with redirects, streaming to the block when one is given.
     def get(uri, token: nil, redirects: 0, &block)
       raise DownloadError, "too many redirects for #{uri}" if redirects > MAX_REDIRECTS
 
       request = Net::HTTP::Get.new(uri)
       request["User-Agent"] = "ruby-laya/#{Laya::VERSION}"
-      request["Authorization"] = "Bearer #{token}" if token && !token.empty? && uri.host == URI(endpoint).host
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = uri.scheme == "https"
-      http.open_timeout = 30
-      http.read_timeout = 300
-      http.start do |conn|
-        conn.request(request) do |response|
+      request["Authorization"] = "Bearer #{token}" if token && uri.host == URI(endpoint).host
+
+      Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https",
+                                          open_timeout: 30, read_timeout: 300) do |http|
+        http.request(request) do |response|
           case response
           when Net::HTTPRedirection
-            location = URI.join(uri, response["location"])
-            return get(location, token: token, redirects: redirects + 1, &block)
+            return get(URI.join(uri, response["location"]), token: token, redirects: redirects + 1, &block)
           when Net::HTTPSuccess
-            if block
-              response.read_body(&block)
-              return nil
-            end
-            return response.body
+            return response.body unless block
+
+            total = response["content-length"].to_i
+            response.read_body { |chunk| block.call(chunk, total) }
+            return nil
           when Net::HTTPUnauthorized, Net::HTTPForbidden
             raise DownloadError, "access denied for #{uri} (HTTP #{response.code}); " \
-                                 "set HF_TOKEN for gated or private repos"
+                                 "set HF_TOKEN for gated or private repositories"
           when Net::HTTPNotFound
             raise DownloadError, "not found: #{uri} (HTTP 404)"
           else

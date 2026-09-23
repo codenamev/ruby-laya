@@ -1,34 +1,28 @@
 # frozen_string_literal: true
 
 require "monitor"
-require "set"
 
 module Laya
-  # The hub repo bundles all three checkpoints; only the requested subfolder is downloaded.
-  BUNDLE_REPO = "convaiinnovations/laya"
+  # The upstream checkpoint each name refers to. The gem runs the ONNX export of whichever one is
+  # chosen, so a decision reports the checkpoint's own id: the weights are the same.
+  BUNDLE_REPO = Checkpoints::BUNDLE_REPO
   DEFAULT_MODELS = {
     "english" => [BUNDLE_REPO, nil].freeze,
     "multilingual" => [BUNDLE_REPO, "multilingual"].freeze,
     "typed-decisions" => [BUNDLE_REPO, "typed-decisions"].freeze
   }.freeze
 
-  # The same checkpoints also live in their own repos, for anyone who prefers them.
+  # The same checkpoints in their own repositories, for anyone who prefers them.
   STANDALONE_MODELS = {
     "english" => "convaiinnovations/laya",
     "multilingual" => "convaiinnovations/laya-multilingual",
     "typed-decisions" => "convaiinnovations/laya-typed-decisions"
   }.freeze
 
-  # Aliases people are likely to type.
-  MODEL_ALIASES = {
-    "en" => "english", "laya" => "english", "default" => "english",
-    "multi" => "multilingual", "ml" => "multilingual", "laya-multilingual" => "multilingual",
-    "typed" => "typed-decisions", "typed_decisions" => "typed-decisions",
-    "laya-typed-decisions" => "typed-decisions", "decisions" => "typed-decisions"
-  }.freeze
+  MODEL_ALIASES = Checkpoints::ALIASES
 
-  # Question-id signatures of the four typed-decisions workflows, used only when
-  # auto_task_detection is enabled.
+  # The question-id signatures of the four typed-decisions workflows, used only when
+  # `auto_task_detection` is on.
   TYPED_DECISION_WORKFLOWS = {
     "agent_trace_observability" => Set.new(%w[action needs_review outcome risk urgency]).freeze,
     "customer_service" => Set.new(%w[action category churn_risk needs_human urgency]).freeze,
@@ -36,136 +30,147 @@ module Laya
     "security_incidents" => Set.new(%w[credential_compromise disposition severity true_positive urgency]).freeze
   }.freeze
 
-  # The routing outcome: which model, why, and what was detected.
-  #
-  # Behaves as a Hash (string keys) so it serialises straight into an API response.
-  class RouteDecision < Hash
-    def initialize(model:, repo:, reason:, detection: nil, workflow: nil)
-      super()
-      self["model"] = model
-      self["repo"] = repo
-      self["reason"] = reason
-      self["detection"] = detection
-      self["workflow"] = workflow
+  # Language subtags that mean "the English checkpoint can read this". Routing needs one bit, not
+  # a language id, so every other code resolves to the multilingual checkpoint.
+  ENGLISH_SUBTAGS = %w[en eng english].freeze
+
+  class << self
+    def normalise_name(name) = Checkpoints.normalise(name)
+    def normalize_name(name) = Checkpoints.normalise(name)
+    def repo_str(spec) = Checkpoints.repo_str(spec)
+
+    def split_model_spec(spec)
+      spec.is_a?(Array) ? [spec[0], spec[1]] : [spec, nil]
     end
 
-    def model = self["model"]
-    def repo = self["repo"]
-    def reason = self["reason"]
-    def detection = self["detection"]
-    def workflow = self["workflow"]
+    # The workflow whose question ids these are, or nil. An exact match is required, so a schema
+    # that merely contains "urgency" is never captured.
+    def match_typed_decisions_workflow(questions)
+      ids = Set.new((questions || {}).keys.map(&:to_s))
+      TYPED_DECISION_WORKFLOWS.find { |_name, signature| ids == signature }&.first
+    end
+
+    # Whether a language code says the English checkpoint can read the text: true, false, or nil
+    # when the code identifies nothing.
+    #
+    # Accepts `"en"`, `"EN"`, `"en-US"`, the POSIX `"en_US"` and `"en_US.UTF-8"`. Nil is not a
+    # verdict but the absence of one, which is what lets a language identifier abstain and the
+    # router fall through to its own detection. It is deliberately not a predicate: a `?` method
+    # that answers nil is a trap for the caller, and for anything that "simplifies" it later.
+    def english_language_hint(value)
+      return nil if value.nil?
+
+      code = value.to_s.strip.downcase.split(".", 2).first.to_s
+      primary = code.tr("_", "-").split("-", 2).first.to_s
+      return nil if primary.empty?
+
+      ENGLISH_SUBTAGS.include?(primary)
+    end
+  end
+
+  # Why a request went to the checkpoint it did.
+  class RouteDecision
+    attr_reader :model, :repo, :reason, :detection, :workflow
+
+    def initialize(model:, repo:, reason:, detection: nil, workflow: nil)
+      @model = model
+      @repo = repo
+      @reason = reason
+      @detection = detection
+      @workflow = workflow
+    end
+
+    # The payload upstream's Python puts under "routing".
+    def to_h
+      { "model" => model, "repo" => repo, "reason" => reason,
+        "detection" => detection, "workflow" => workflow }
+    end
+
+    def to_json(*) = to_h.to_json(*)
 
     def inspect
-      "RouteDecision(model=#{model.inspect}, reason=#{reason.inspect})"
-    end
-    alias to_s inspect
-  end
-
-  # Normalise a model spec to `[repo_or_path, subfolder]`.
-  def self.split_model_spec(spec)
-    if spec.is_a?(Array)
-      repo, sub = spec
-      [repo, sub]
-    else
-      [spec, nil]
+      "#<Laya::RouteDecision #{model.inspect} #{reason.inspect}>"
     end
   end
 
-  # Human-readable id for a model spec: "repo" or "repo/subfolder".
-  def self.repo_str(spec)
-    repo, sub = split_model_spec(spec)
-    sub ? "#{repo}/#{sub}" : repo
-  end
-
-  # Canonical checkpoint name for `name` or one of its aliases.
-  def self.normalise_name(name)
-    key = name.to_s.strip.downcase
-    key = MODEL_ALIASES.fetch(key, key)
-    unless DEFAULT_MODELS.key?(key)
-      raise ArgumentError, "unknown model #{name.inspect}; choose one of #{DEFAULT_MODELS.keys.sort} " \
-                           "(or an alias: #{MODEL_ALIASES.keys.sort})"
-    end
-    key
-  end
-
-  def self.normalize_name(name)
-    normalise_name(name)
-  end
-
-  # Name of the typed-decisions workflow whose question ids these are, else nil.
+  # Sends each request to the checkpoint best suited to it.
   #
-  # Requires an exact id-set match, so an unrelated schema that happens to contain "urgency"
-  # is never captured.
-  def self.match_typed_decisions_workflow(questions)
-    ids = Set.new((questions || {}).keys.map(&:to_s))
-    TYPED_DECISION_WORKFLOWS.each do |wf, sig|
-      return wf if ids == sig
-    end
-    nil
-  end
-
-  # Lazily loads Laya checkpoints and sends each request to the right one.
+  #   router = Laya::Router.new
+  #   router.predict({ "message" => "Mein Konto wurde zweimal belastet" }, questions) # multilingual
+  #   router.predict({ "message" => "I was charged twice" }, questions)               # english
+  #   router.predict(state, questions, model: "typed-decisions")                      # explicit
   #
-  #     r = Laya::Router.new
-  #     r.predict({ "message" => "Mein Konto wurde zweimal belastet" }, questions)  # -> multilingual
-  #     r.predict({ "message" => "I was charged twice" }, questions)                # -> english
-  #     r.predict(state, questions, model: "typed-decisions")                       # explicit
+  # Checkpoints are downloaded and built on first use, and `max_loaded` caps how many stay
+  # resident. The default of two is what automatic routing needs: it only ever chooses between
+  # english and multilingual, and a cap of one would rebuild the checkpoint it just evicted on
+  # every script switch. Raise it to three, or preload, when `typed-decisions` is also in play.
   #
-  # Models are downloaded and built on first use. `max_loaded` caps how many stay resident
-  # (least-recently-used is evicted), because all three together are ~1.16B parameters.
-  #
-  # For a server or a demo, preload instead: a cold load costs seconds, while detection costs
-  # microseconds, so anything that alternates languages at `max_loaded: 1` reloads on every
-  # request.
-  #
-  #     r = Laya::Router.new(preload: true)              # all three resident, routing is free
-  #     r = Laya::Router.new(preload: true, device: "cuda")
-  #     r.preload(["english", "multilingual"])           # or just the two you serve
-  #
-  # `agent_factory` builds an agent from `(repo, subfolder:, device:, token:)`; it defaults to
-  # {Laya::Agent.new} and exists so tests and embedders can substitute their own runtime.
+  #   router = Laya::Router.new(preload: true)          # everything resident, routing is free
+  #   router.preload(["english", "multilingual"])       # or just the two you serve
+  #   router.attach("english", existing_agent)          # reuse an agent you already built
+  #   router.unload                                     # free memory
   class Router
-    attr_reader :models, :device, :token, :default, :auto_task_detection
+    DEFAULT_MAX_LOADED = 2
+
+    attr_reader :models, :device, :providers, :token, :default, :auto_task_detection, :lang_guess
     attr_accessor :max_loaded
 
-    def initialize(models: nil, device: nil, token: nil, max_loaded: 1, default: "english",
-                   auto_task_detection: false, standalone_repos: false, preload: false,
-                   agent_factory: nil)
+    # Builds an {Agent}. Injectable so a test, or an app with its own loading rules, can decide
+    # how a checkpoint comes into being.
+    DEFAULT_AGENT_FACTORY = lambda do |repo, subfolder: nil, **options|
+      Agent.new(repo, subfolder: subfolder, **options)
+    end
+
+    def self.open(**)
+      router = new(**)
+      return router unless block_given?
+
+      begin
+        yield router
+      ensure
+        router.close
+      end
+    end
+
+    def initialize(models: nil, device: nil, providers: nil, token: nil, max_loaded: DEFAULT_MAX_LOADED,
+                   default: "english", auto_task_detection: false, standalone_repos: false,
+                   preload: false, lang_guess: nil, threads: nil, agent_factory: nil)
       @models = (standalone_repos ? STANDALONE_MODELS : DEFAULT_MODELS).dup
-      models&.each { |k, v| @models[Laya.normalise_name(k)] = v }
+      models&.each { |name, spec| @models[Checkpoints.normalise(name)] = spec }
       @device = device
-      @token = token || ENV.fetch("HF_TOKEN", nil)
+      @providers = providers
+      @threads = threads
+      @token = token || Hub.token
       @max_loaded = [1, Integer(max_loaded)].max
-      @default = Laya.normalise_name(default)
+      @default = Checkpoints.normalise(default)
       @auto_task_detection = auto_task_detection ? true : false
+      # An opt-in hint applied to every request: a language code, or a callable taking the state
+      # and returning one (or nil to abstain). Checked before the built-in detection, never
+      # before an explicit model, task or lang. This is the seam for a real language model.
+      @lang_guess = lang_guess
       @agent_factory = agent_factory || DEFAULT_AGENT_FACTORY
       @agents = {}
-      @order = [] # least-recently-used first
-      # Re-entrant lock guarding model lifecycle (load/unload/attach/preload) and the LRU
-      # bookkeeping. Inference is deliberately left outside the lock so concurrent predictions
-      # share a checkpoint without serialising.
+      @order = [] # least recently used first
+      # Guards the model lifecycle and the LRU bookkeeping. Inference deliberately runs outside
+      # it, so concurrent requests share a checkpoint instead of queueing.
       @lock = Monitor.new
       self.preload if preload
     end
 
-    DEFAULT_AGENT_FACTORY = lambda do |repo, subfolder: nil, device: nil, token: nil|
-      Laya::Agent.new(repo, device: device, token: token, subfolder: subfolder)
-    end
+    # ---------------------------------------------------------------- loading
 
-    # ------------------------------------------------------------------ loading
-
-    # Return the agent for `name`, downloading and building it on first use.
-    #
-    # Concurrent callers share a single agent instead of building duplicates.
+    # The agent for `name`, built on first use. Concurrent callers share one.
     def load(name)
-      key = Laya.normalise_name(name)
+      key = Checkpoints.normalise(name)
       @lock.synchronize do
         if @agents.key?(key)
           touch(key)
-          return @agents[key]
+          next @agents[key]
         end
-        repo, sub = Laya.split_model_spec(@models[key])
-        agent = @agent_factory.call(repo, subfolder: sub, device: @device, token: @token)
+
+        repo, subfolder = Laya.split_model_spec(@models.fetch(key))
+        agent = @agent_factory.call(repo, subfolder: subfolder, device: @device, providers: @providers,
+                                          token: @token, threads: @threads)
         @agents[key] = agent
         @order << key
         evict
@@ -173,13 +178,9 @@ module Laya
       end
     end
 
-    # Register an already-built agent under `name` instead of loading a second copy.
-    #
-    # Useful when the process has a checkpoint loaded for other reasons: an app that already
-    # built `convaiinnovations/laya` can hand it to the router rather than pay for -- and hold
-    # in memory -- a duplicate 421M parameters.
+    # Register an already-built agent instead of loading a second copy.
     def attach(name, agent)
-      key = Laya.normalise_name(name)
+      key = Checkpoints.normalise(name)
       @lock.synchronize do
         @agents[key] = agent
         touch(key)
@@ -188,139 +189,165 @@ module Laya
       agent
     end
 
-    # Download and build checkpoints up front so no request ever pays a model load.
-    #
-    # `max_loaded` is raised to fit whatever is preloaded, otherwise the LRU would immediately
-    # evict what this just built.
+    # Build checkpoints up front, so no request pays a cold load. `max_loaded` grows to fit both
+    # what is requested and what is already resident, so preloading never evicts.
     def preload(names = nil)
-      names = (names || @models.keys).map { |n| Laya.normalise_name(n) }
+      names = (names || @models.keys).map { |name| Checkpoints.normalise(name) }
       @lock.synchronize do
-        @max_loaded = [@max_loaded, names.length, @agents.length].max
-        names.each { |n| load(n) unless @agents.key?(n) } # an attached agent is already built
+        @max_loaded = [@max_loaded, (names | @agents.keys).length].max
+        names.each { |name| load(name) unless @agents.key?(name) }
       end
       self
     end
 
-    # Free one model, or all of them.
+    # Free one checkpoint, or all of them.
     def unload(name = nil)
       @lock.synchronize do
-        if name.nil?
-          @agents.clear
-          @order.clear
-        else
-          key = Laya.normalise_name(name)
-          @agents.delete(key)
+        keys = name ? [Checkpoints.normalise(name)] : @agents.keys
+        keys.each do |key|
+          agent = @agents.delete(key)
           @order.delete(key)
+          agent&.close if agent.respond_to?(:close)
         end
       end
       nil
     end
+    alias close unload
 
-    # Names of the resident checkpoints, least-recently-used first.
+    # The resident checkpoints, least recently used first.
     def loaded
       @lock.synchronize { @order.dup }
     end
 
-    # The resident agents by name (a copy).
     def agents
       @lock.synchronize { @agents.dup }
     end
 
-    # ------------------------------------------------------------------ routing
+    # ---------------------------------------------------------------- routing
 
     # Decide which checkpoint to use, without loading or running anything.
     #
-    # Precedence: explicit `model` > explicit `task` > detected workflow (opt-in) >
-    # explicit `lang` > detected script/language > default.
-    def route(state, questions = nil, model: nil, task: nil, lang: nil)
-      unless model.nil?
-        key = Laya.normalise_name(model)
-        return RouteDecision.new(model: key, repo: Laya.repo_str(@models[key]),
-                                 reason: "explicit model=#{model.inspect}")
-      end
-
-      unless task.nil?
-        task_key = task.to_s.downcase.tr("-", "_") == "typed_decisions" ? "typed-decisions" : task
-        key = Laya.normalise_name(task_key)
-        return RouteDecision.new(model: key, repo: Laya.repo_str(@models[key]),
-                                 reason: "explicit task=#{task.inspect}")
-      end
+    # Precedence: explicit `model`, explicit `task`, a detected workflow (opt-in), explicit
+    # `lang`, a `lang_guess` hint, detected script and language, then the default.
+    def route(state, questions = nil, model: nil, task: nil, lang: nil, lang_guess: nil)
+      return decide(model, "explicit model=#{model.inspect}") unless model.nil?
+      return decide(task_name(task), "explicit task=#{task.inspect}") unless task.nil?
 
       workflow = Laya.match_typed_decisions_workflow(questions || {})
-      if workflow && @auto_task_detection
-        return RouteDecision.new(model: "typed-decisions", repo: Laya.repo_str(@models["typed-decisions"]),
-                                 reason: "question ids match the #{workflow.inspect} typed-decisions workflow",
-                                 workflow: workflow)
+      if workflow && auto_task_detection
+        return decide("typed-decisions",
+                      "question ids match the #{workflow.inspect} typed-decisions workflow",
+                      workflow: workflow)
       end
-
       unless lang.nil?
-        key = %w[en eng english].include?(lang.to_s.downcase.split("-").first) ? "english" : "multilingual"
-        return RouteDecision.new(model: key, repo: Laya.repo_str(@models[key]),
-                                 reason: "explicit lang=#{lang.inspect}", workflow: workflow)
+        return decide(checkpoint_for(Laya.english_language_hint(lang)), "explicit lang=#{lang.inspect}",
+                      workflow: workflow)
       end
 
-      det = Lang.analyse(state)
-      if det["script"] == "unknown"
-        key = @default
-        reason = "no letters detected in state; using default (#{key})"
-      elsif det["script"] != "latin"
-        key = "multilingual"
-        reason = format("non-Latin script (%s, %.0f%% of letters); the English checkpoint cannot read it",
-                        det["script"], 100 * det["non_latin_fraction"].to_f)
-      elsif !det["is_english"]
-        key = "multilingual"
-        reason = if det["language"]
-                   "Latin script but language looks like #{det['language'].inspect}, not English"
-                 else
-                   # Unidentified Latin-script language: routed on the non-English letters alone,
-                   # because no stopword list here covers it.
-                   format("Latin script, language not identified but %.0f%% non-English letters; " \
-                          "not safe for the English checkpoint", 100 * det["diacritic_rate"].to_f)
-                 end
-      else
-        key = "english"
-        reason = "English Latin text"
-      end
-      RouteDecision.new(model: key, repo: Laya.repo_str(@models[key]), reason: reason,
-                        detection: det, workflow: workflow)
+      hinted = hinted_decision(state, lang_guess, workflow)
+      return hinted if hinted
+
+      detected(state, workflow)
     end
 
-    # ------------------------------------------------------------------ running
+    # ---------------------------------------------------------------- running
 
-    # Route, then answer every question in one forward pass on the chosen checkpoint.
-    #
-    # The result is the usual `system_one` payload plus a "routing" key recording the decision.
-    def predict(state, questions, model: nil, task: nil, lang: nil)
-      decision = route(state, questions, model: model, task: task, lang: lang)
-      agent = load(decision.model)
-      result = agent.system_one(state, questions)
-      result["routing"] = decision.to_h
-      result
+    # Route, then answer every question on the chosen checkpoint. The {Result} carries the
+    # decision that was made.
+    def predict(state, questions, model: nil, task: nil, lang: nil, lang_guess: nil)
+      decision = route(state, questions, model: model, task: task, lang: lang, lang_guess: lang_guess)
+      load(decision.model).predict(state, questions).with_routing(decision)
     end
     alias system_one predict
 
     def inspect
-      "#<Laya::Router loaded=#{loaded.inspect} max_loaded=#{@max_loaded} default=#{@default.inspect}>"
+      "#<Laya::Router loaded=#{loaded.inspect} max_loaded=#{max_loaded} default=#{default.inspect}>"
     end
 
     private
 
-    def touch(key)
-      @lock.synchronize do
-        @order.delete(key)
-        @order << key
+    def decide(name, reason, detection: nil, workflow: nil)
+      key = Checkpoints.normalise(name)
+      RouteDecision.new(model: key, repo: Checkpoints.repo_str(@models.fetch(key)), reason: reason,
+                        detection: detection, workflow: workflow)
+    end
+
+    def task_name(task)
+      task.to_s.downcase.tr("-", "_") == "typed_decisions" ? "typed-decisions" : task
+    end
+
+    def checkpoint_for(english)
+      english ? "english" : "multilingual"
+    end
+
+    # A caller's hint, per call first and then the one installed on the router. Only a hint that
+    # actually answers the question routes; anything else falls through to detection.
+    def hinted_decision(state, per_call, workflow)
+      [["lang_guess", per_call], ["Router(lang_guess=...)", lang_guess]].each do |source, hint|
+        english = resolve_hint(hint, state)
+        next if english.nil?
+
+        return decide(checkpoint_for(english),
+                      "#{source}: the caller identified this as #{english ? 'English' : 'non-English'} text",
+                      workflow: workflow)
+      end
+      nil
+    end
+
+    def resolve_hint(hint, state)
+      return nil if hint.nil?
+
+      Laya.english_language_hint(hint.respond_to?(:call) ? hint.call(state) : hint)
+    end
+
+    def detected(state, workflow)
+      detection = Lang.analyse(state)
+      name, reason = read_detection(detection)
+      decide(name, reason, detection: detection, workflow: workflow)
+    end
+
+    def read_detection(detection)
+      if detection["script"] == "unknown"
+        [default, "no letters detected in state; using default (#{default})"]
+      elsif detection["script"] != "latin"
+        ["multilingual", format("non-Latin script (%s, %.0f%% of letters); the English checkpoint " \
+                                "cannot read it", detection["script"], 100 * detection["non_latin_fraction"])]
+      elsif !detection["is_english"]
+        ["multilingual", non_english_reason(detection)]
+      elsif detection["language_undecided"]
+        # Nothing identifies the language: too short, or only content words. That is no evidence
+        # of English either, so it takes the same default as a state with no letters at all.
+        [default, "Latin script, language not identified and no non-English letters; " \
+                  "using default (#{default})"]
+      else
+        ["english", "English Latin text"]
       end
     end
 
-    def evict
-      @lock.synchronize do
-        while @order.length > @max_loaded
-          victim = @order.shift
-          @agents.delete(victim)
-        end
-        # keep the two views consistent
-        @agents.delete_if { |k, _| !@order.include?(k) } if @order.length < @agents.length
+    def non_english_reason(detection)
+      if detection["language"]
+        return "Latin script but language looks like #{detection['language'].inspect}, not English"
       end
+
+      # An unidentified Latin-script language, routed on its non-English letters alone because no
+      # stopword list here covers it.
+      format("Latin script, language not identified but %.0f%% non-English letters; not safe for " \
+             "the English checkpoint", 100 * detection["diacritic_rate"])
+    end
+
+    def touch(key)
+      @order.delete(key)
+      @order << key
+    end
+
+    def evict
+      while @order.length > @max_loaded
+        agent = @agents.delete(@order.shift)
+        agent&.close if agent.respond_to?(:close)
+      end
+      return unless @order.length < @agents.length
+
+      (@agents.keys - @order).each { |key| @agents.delete(key)&.then { |a| a.close if a.respond_to?(:close) } }
     end
   end
 end

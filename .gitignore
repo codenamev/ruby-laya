@@ -12,5 +12,4 @@ Gemfile.lock
 *.token
 .hf_token
 hf_token*
-/test/fixtures/generated/
 

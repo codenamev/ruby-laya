@@ -11,24 +11,24 @@ Gem::Specification.new do |spec|
   spec.summary = "Fast, non-autoregressive System 1 decision engine with calibrated probabilities"
   spec.description = <<~DESC
     Ruby port of Laya: typed decisions (choice, score, noul) over any state in a single
-    encoder forward pass, with a router that picks the right checkpoint per request
-    (English, multilingual, typed-decisions). Language and script detection, email
-    cleaning, workflow presets and the embedding shortlist are pure Ruby; inference runs
-    on LibTorch through torch-rb.
+    forward pass, with calibrated probabilities and a router that picks the right checkpoint
+    per request (English, multilingual, typed-decisions). Inference runs on ONNX Runtime
+    against exports of the published checkpoints, so installing needs no Python, no LibTorch
+    and no compiler. Language and script detection, email cleaning, workflow presets and the
+    embedding shortlist are pure Ruby.
   DESC
   spec.homepage = "https://github.com/codenamev/ruby-laya"
   spec.license = "Apache-2.0"
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 3.3"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir["lib/**/*.rb", "sig/**/*.rbs", "LICENSE", "README.md", "CHANGELOG.md", "NOTICE"]
+  spec.files = Dir["lib/**/*.rb", "LICENSE", "README.md", "CHANGELOG.md", "NOTICE"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "safetensors", "~> 0.2"
-  spec.add_dependency "tokenizers", "~> 0.5"
-  spec.add_dependency "torch-rb", ">= 0.20"
+  spec.add_dependency "onnxruntime", ">= 0.9"
+  spec.add_dependency "tokenizers", ">= 0.5"
 end
